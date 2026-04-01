@@ -1,0 +1,54 @@
+# ====================================================
+# AI Avatar REI - Python Dependencies
+# Render.com デプロイ用
+# ====================================================
+
+# Webフレームワーク
+Flask==2.3.3
+Flask-SocketIO==5.3.6
+Flask-CORS==4.0.0
+python-socketio==5.11.0
+gunicorn==21.2.0
+
+# 環境変数・設定
+python-dotenv==1.0.0
+dnspython==2.4.2
+
+# Flask依存関係
+Jinja2==3.1.2
+Werkzeug==2.3.7
+itsdangerous==2.1.2
+click==8.1.7
+
+# HTTP通信
+requests==2.31.0
+urllib3==2.0.7
+httpx==0.27.0
+
+# AI/機械学習（最新安定版で互換性向上）
+openai==1.54.5
+tiktoken==0.5.2
+
+# データ処理（Python 3.11互換）
+pandas==2.0.3
+numpy==1.24.4
+scipy==1.11.4
+
+# 音声処理
+azure-cognitiveservices-speech==1.36.0
+
+# 画像処理（クイズ報酬画像用）
+Pillow==10.2.0
+
+# WebSocketサポート
+eventlet==0.33.3
+
+# Google Sheets API (アンケートシステム用)
+google-auth==2.23.4
+google-api-python-client==2.108.0
+
+# ====================================================
+# 注意: ChromaDB, langchain, sentence-transformers は
+# build.shで個別にインストールされます
+# （バージョン競合を避けるため）
+# ==================================================== 

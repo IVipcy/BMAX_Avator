@@ -1,0 +1,33 @@
+{
+	"Version": 3,
+	"FileReferences": {
+		"Moc": "nagamisan_FIN0.moc3",
+		"Textures": [
+			"nagamisan_FIN0.1024/texture_00.png"
+		],
+		"DisplayInfo": "nagamisan_FIN0.cdi3.json",
+		"Motions": {
+			"": [
+				{
+					"File": "mtn/NeutralTalking.motion3.json"
+				},
+				{
+					"File": "mtn/Start.motion3.json"
+				}
+			]
+		}
+	},
+	"Groups": [
+		{
+			"Target": "Parameter",
+			"Name": "LipSync",
+			"Ids": []
+		},
+		{
+			"Target": "Parameter",
+			"Name": "EyeBlink",
+			"Ids": []
+		}
+	],
+	"HitAreas": []
+}

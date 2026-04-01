@@ -1,0 +1,279 @@
+{
+	"Version": 3,
+	"Parameters": [
+		{
+			"Id": "ParamAngleX",
+			"GroupId": "ParamGroup2",
+			"Name": "角度 X"
+		},
+		{
+			"Id": "ParamAngleY",
+			"GroupId": "ParamGroup2",
+			"Name": "角度 Y"
+		},
+		{
+			"Id": "ParamAngleZ",
+			"GroupId": "ParamGroup2",
+			"Name": "角度 Z"
+		},
+		{
+			"Id": "ParamHairFront",
+			"GroupId": "ParamGroup2",
+			"Name": "髪揺れ　前"
+		},
+		{
+			"Id": "ParamHairSide",
+			"GroupId": "ParamGroup2",
+			"Name": "髪揺れ　横"
+		},
+		{
+			"Id": "ParamHairBack",
+			"GroupId": "ParamGroup2",
+			"Name": "髪揺れ　後"
+		},
+		{
+			"Id": "ParamEyeLOpen",
+			"GroupId": "ParamGroup3",
+			"Name": "左目　開閉"
+		},
+		{
+			"Id": "ParamEyeROpen",
+			"GroupId": "ParamGroup3",
+			"Name": "右目　開閉"
+		},
+		{
+			"Id": "ParamEyeBallY",
+			"GroupId": "ParamGroup3",
+			"Name": "目玉 Y"
+		},
+		{
+			"Id": "ParamEyeBallX",
+			"GroupId": "ParamGroup3",
+			"Name": "目玉 X"
+		},
+		{
+			"Id": "ParamBrowLY",
+			"GroupId": "ParamGroup3",
+			"Name": "左眉　上下"
+		},
+		{
+			"Id": "ParamBrowRY",
+			"GroupId": "ParamGroup3",
+			"Name": "右眉　上下"
+		},
+		{
+			"Id": "ParamBrowLAngle",
+			"GroupId": "ParamGroup3",
+			"Name": "左眉　角度"
+		},
+		{
+			"Id": "ParamBrowRAngle",
+			"GroupId": "ParamGroup3",
+			"Name": "右眉　角度"
+		},
+		{
+			"Id": "ParamMouthForm",
+			"GroupId": "ParamGroup4",
+			"Name": "口　変形"
+		},
+		{
+			"Id": "ParamMouthOpenY",
+			"GroupId": "ParamGroup4",
+			"Name": "口　開閉"
+		},
+		{
+			"Id": "ParamBodyAngleX",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転 X"
+		},
+		{
+			"Id": "Param13",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転Z"
+		},
+		{
+			"Id": "ParamBodyAngleY",
+			"GroupId": "ParamGroup5",
+			"Name": "体の回転 Y"
+		},
+		{
+			"Id": "ParamBreath",
+			"GroupId": "ParamGroup5",
+			"Name": "呼吸"
+		},
+		{
+			"Id": "Param2",
+			"GroupId": "ParamGroup",
+			"Name": "R上腕回転"
+		},
+		{
+			"Id": "Param3",
+			"GroupId": "ParamGroup",
+			"Name": "R前腕回転"
+		},
+		{
+			"Id": "Param",
+			"GroupId": "ParamGroup",
+			"Name": "L腕動き"
+		},
+		{
+			"Id": "Param6",
+			"GroupId": "ParamGroup",
+			"Name": "上腕Y"
+		},
+		{
+			"Id": "Param8",
+			"GroupId": "ParamGroup",
+			"Name": "前腕Y"
+		},
+		{
+			"Id": "Param4",
+			"GroupId": "ParamGroup",
+			"Name": "手の表示切り替え"
+		},
+		{
+			"Id": "Param5",
+			"GroupId": "ParamGroup6",
+			"Name": "説明手の回転"
+		},
+		{
+			"Id": "Param7",
+			"GroupId": "ParamGroup6",
+			"Name": "親指"
+		},
+		{
+			"Id": "Param11",
+			"GroupId": "ParamGroup6",
+			"Name": "薬指"
+		},
+		{
+			"Id": "Param12",
+			"GroupId": "ParamGroup6",
+			"Name": "小指"
+		},
+		{
+			"Id": "Param9",
+			"GroupId": "ParamGroup6",
+			"Name": "人差し指"
+		},
+		{
+			"Id": "Param10",
+			"GroupId": "ParamGroup6",
+			"Name": "中指"
+		}
+	],
+	"ParameterGroups": [
+		{
+			"Id": "ParamGroup2",
+			"GroupId": "",
+			"Name": "顔"
+		},
+		{
+			"Id": "ParamGroup3",
+			"GroupId": "",
+			"Name": "目"
+		},
+		{
+			"Id": "ParamGroup4",
+			"GroupId": "",
+			"Name": "口"
+		},
+		{
+			"Id": "ParamGroup5",
+			"GroupId": "",
+			"Name": "体"
+		},
+		{
+			"Id": "ParamGroup",
+			"GroupId": "",
+			"Name": "腕"
+		},
+		{
+			"Id": "ParamGroup6",
+			"GroupId": "",
+			"Name": "手"
+		}
+	],
+	"Parts": [
+		{
+			"Id": "Part",
+			"Name": "ゴーグル"
+		},
+		{
+			"Id": "Part2",
+			"Name": "前髪"
+		},
+		{
+			"Id": "Part3",
+			"Name": "横髪"
+		},
+		{
+			"Id": "Part4",
+			"Name": "まゆ毛"
+		},
+		{
+			"Id": "Part18",
+			"Name": "コア"
+		},
+		{
+			"Id": "Part5",
+			"Name": "眼鏡"
+		},
+		{
+			"Id": "Part6",
+			"Name": "目"
+		},
+		{
+			"Id": "Part7",
+			"Name": "鼻"
+		},
+		{
+			"Id": "Part8",
+			"Name": "口"
+		},
+		{
+			"Id": "Part9",
+			"Name": "顔"
+		},
+		{
+			"Id": "Part10",
+			"Name": "耳"
+		},
+		{
+			"Id": "Part11",
+			"Name": "上半身"
+		},
+		{
+			"Id": "Part12",
+			"Name": "腕"
+		},
+		{
+			"Id": "Part15",
+			"Name": "首"
+		},
+		{
+			"Id": "Part16",
+			"Name": "ミニ四駆"
+		},
+		{
+			"Id": "Part19",
+			"Name": "手"
+		},
+		{
+			"Id": "Part13",
+			"Name": "下半身"
+		},
+		{
+			"Id": "Part14",
+			"Name": "靴"
+		},
+		{
+			"Id": "Part17",
+			"Name": "通常手"
+		},
+		{
+			"Id": "Part20",
+			"Name": "説明の手"
+		}
+	]
+}

@@ -1,0 +1,127 @@
+# ====== クイズシステムデータ ======
+QUIZ_DATA = {
+    'ja': [
+        {
+            'question': '森さんが話していた「挿し友禅」とは、どんな工程のこと？',
+            'options': [
+                'A) 模様の輪郭に糊を置く工程',
+                'B) 筆や刷毛で模様に色を挿していく工程',
+                'C) 布を水で洗って仕上げる工程'
+            ],
+            'correct': 1,
+            'explanation': '正解じゃ！挿し友禅は筆や刷毛で手作業で模様に色を挿していく工程のことじゃよ。友禅染の中で最も絵画的で華やかな部分を担当しておってな、この工程があるから京友禅は美しい色彩を持つようになるんじゃ。色を「挿す」から「刺す」じゃなくて良かったのう！ハハハ！✨'
+        },
+        {
+            'question': '「ぼかし」という技法について、正しい説明はどれ？',
+            'options': [
+                'A) 模様の外側から内側にかけて徐々に色を薄くしていく技法',
+                'B) 複数の色を混ぜて新しい色を作る技法',
+                'C) 布を熱で炙って乾燥させる技法'
+            ],
+            'correct': 0,
+            'explanation': '正解じゃ！ぼかしはな、模様の外側から内側にかけて徐々に色を薄くしていく技法じゃよ。水を含ませた筆で染料の境界を優しくなぞると、自然なグラデーションができて立体感が出るんじゃ。力加減が難しくて、最初は失敗したこともあったのう。ぼかしの技術は「ボカ」っとしとったらダメじゃぞ！ハハハ！🎨'
+        },
+        {
+            'question': '森さんが「職人として一番苦労したこと」として話していたのはどれ？',
+            'options': [
+                'A) 道具の手入れを毎日すること',
+                'B) 色の濃淡を均一に保つこと',
+                'C) テニスの時間を確保すること'
+            ],
+            'correct': 1,
+            'explanation': '正解じゃ！最初の頃は、色の濃淡を均一に保つのが本当に難しかったんじゃよ。同じ色を何度も作ろうとしても、微妙に違う色になっちゃうんじゃ。先輩に何度も教えてもらって、今のレベルになったのう。根気が必要な仕事じゃが、やりがいがあるぞい！苦労も「色々」じゃのう！ハハハ！💪'
+        },
+        {
+            'question': '「糸目糊」の役割として正しいのはどれ？',
+            'options': [
+                'A) 染料を布に定着させる',
+                'B) 模様の輪郭に糊を置いて色が混ざらないようにする',
+                'C) 布を柔らかくする'
+            ],
+            'correct': 1,
+            'explanation': '正解じゃ！糸目糊は模様の輪郭に糊で細い線を引いておくと、隣り合う色が混ざらないんじゃよ。まるで線画みたいに見えてな、その中にわしが色を塗っていく感じじゃ。「糊」だけに、この技術は「ノリ」に乗っておるのう！ハハハ！🖌️'
+        },
+        {
+            'question': '森さんの日曜日の楽しみは何？',
+            'options': [
+                'A) 散歩',
+                'B) テニス',
+                'C) 昼寝'
+            ],
+            'correct': 1,
+            'explanation': '正解じゃ！日曜日にテニスをするのが楽しみなんじゃよ。挿し友禅の仕事はずっと細かい作業でな、気づいたら肩がガチガチになっとるんじゃ。テニスで体を動かすと、体も心もスッキリするぞい！🎾'
+        },
+        {
+            'question': '森さんの座右の銘として話していたのはどれ？',
+            'options': [
+                'A) 一日一善',
+                'B) 着る人の気持ちになって作る',
+                'C) 継続は力なり'
+            ],
+            'correct': 1,
+            'explanation': '正解じゃ！わしの座右の銘は「着る人の気持ちになって作る」ことと「自分の仕事に満足せずいつまでも勉強」じゃな。先祖代々の技を継いできたんじゃが、まだまだ勉強することはあるんじゃよ。あと10年は健康で頑張りたいもんじゃ！📚'
+        }
+    ],
+    'en': [
+        {
+            'question': 'What is "Sashi-Yuzen" that Mori-san talked about?',
+            'options': [
+                'A) The process of placing glue on pattern outlines',
+                'B) The process of applying colors to patterns with brushes',
+                'C) The process of washing and finishing the fabric'
+            ],
+            'correct': 1,
+            'explanation': 'Correct! Sashi-Yuzen is the process of applying colors to kimono patterns by hand using brushes. It\'s the most artistic and vibrant part of Yuzen dyeing, and this process gives Kyo-Yuzen its beautiful colors. Good thing "sashi" means insert, not stab! Hahaha!✨'
+        },
+        {
+            'question': 'Which description correctly explains the "bokashi" technique?',
+            'options': [
+                'A) A technique that gradually lightens color from outside to inside',
+                'B) A technique that mixes multiple colors to create new ones',
+                'C) A technique that dries fabric by heating it'
+            ],
+            'correct': 0,
+            'explanation': 'Correct! Bokashi gradually lightens the color from the outside to the inside of a pattern. Gently tracing the dye boundary with a water-soaked brush creates a natural gradation and gives depth. The pressure control is difficult, and I failed at first too. You can\'t be "blurry" about bokashi! Hahaha!🎨'
+        },
+        {
+            'question': 'What did Mori-san mention as the biggest challenge as a craftsperson?',
+            'options': [
+                'A) Maintaining tools every day',
+                'B) Keeping color intensity uniform',
+                'C) Finding time for tennis'
+            ],
+            'correct': 1,
+            'explanation': 'Correct! At first, keeping the color intensity uniform was really difficult. Even when trying to make the same color multiple times, it would turn out slightly different. With repeated teaching from seniors, I reached my current level. It requires patience, but it\'s rewarding work! Hard work is "colorful" in many ways! Hahaha!💪'
+        },
+        {
+            'question': 'What is the role of "itome-nori" (resist paste)?',
+            'options': [
+                'A) To fix the dye to the fabric',
+                'B) To draw lines on pattern outlines to prevent colors from mixing',
+                'C) To soften the fabric'
+            ],
+            'correct': 1,
+            'explanation': 'Correct! Itome-nori involves drawing thin lines with paste on pattern outlines to prevent adjacent colors from mixing. It looks like a line drawing, and I color inside it. The paste really "sticks" to its job! Hahaha!🖌️'
+        },
+        {
+            'question': 'What is Mori-san\'s Sunday pleasure?',
+            'options': [
+                'A) Walking',
+                'B) Tennis',
+                'C) Napping'
+            ],
+            'correct': 1,
+            'explanation': 'Correct! Playing tennis on Sundays is my pleasure! Doing detailed Sashi-Yuzen work all day makes my shoulders super stiff. Tennis helps me feel refreshed in body and mind!🎾'
+        },
+        {
+            'question': 'What is Mori-san\'s motto?',
+            'options': [
+                'A) One good deed a day',
+                'B) Make it with the wearer in mind',
+                'C) Persistence is power'
+            ],
+            'correct': 1,
+            'explanation': 'Correct! My motto is "Make it with the wearer in mind" and "Never be satisfied, always keep learning." I\'ve inherited techniques from generations of ancestors, but there\'s still so much to learn. I want to keep working healthily for at least 10 more years!📚'
+        }
+    ]
+}
