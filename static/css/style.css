@@ -24,94 +24,127 @@ body {
 }
 
 /* ============================================================
-   B-MAX GP THEME OVERRIDES（ゴールド×ブラック）
-   既存のスタイルは残し、下で上書きします
+   HEADER THEME OVERRIDES（ネオン紫×シアン）
+   `static/images/source/Header.png` のテイストに合わせて上書き
    ============================================================ */
 
 :root {
-    --bmax-gold-1: #d4af37;
-    --bmax-gold-2: #b8860b;
-    --bmax-ink-1: #0b0b0f;
-    --bmax-ink-2: #14141c;
-    --bmax-cream: rgba(255, 248, 230, 0.92);
-    --bmax-border: rgba(212, 175, 55, 0.55);
-    --bmax-glow: rgba(212, 175, 55, 0.45);
+    --bmax-gold-1: #9a4dff; /* neon purple */
+    --bmax-gold-2: #00b7ff; /* neon cyan */
+    --bmax-ink-1: #070711;
+    --bmax-ink-2: #0d0d1a;
+    --bmax-cream: rgba(245, 246, 255, 0.92);
+    --bmax-border: rgba(154, 77, 255, 0.62);
+    --bmax-glow: rgba(0, 183, 255, 0.38);
+    --bmax-glow-2: rgba(154, 77, 255, 0.34);
 }
 
-/* 背景は既存画像を活かしつつ、ゴールドの薄いベールを載せる */
+/* 背景は既存画像を活かしつつ、ネオンの薄いベールを載せる */
 body::after {
     content: "";
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(1200px 600px at 25% 15%, rgba(212, 175, 55, 0.18), transparent 60%),
-        radial-gradient(900px 500px at 75% 20%, rgba(184, 134, 11, 0.12), transparent 55%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.10), rgba(0, 0, 0, 0.35));
+        radial-gradient(1200px 600px at 20% 18%, rgba(154, 77, 255, 0.22), transparent 60%),
+        radial-gradient(900px 520px at 78% 22%, rgba(0, 183, 255, 0.18), transparent 58%),
+        radial-gradient(760px 420px at 65% 70%, rgba(154, 77, 255, 0.10), transparent 62%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.40));
     z-index: -1;
     pointer-events: none;
 }
 
-/* ヘッダー：画像の上にゴールドライン＋読みやすい文字 */
+/* ヘッダー：画像の上にネオンライン＋読みやすい文字 */
 .fixed-header {
-    border-bottom: 1px solid rgba(212, 175, 55, 0.35);
+    border-bottom: 1px solid rgba(0, 183, 255, 0.35);
     box-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
 }
 
+/* タイトル：ネオン寄せ */
 .main-title {
     color: #fff;
+    font-family: 'Dela Gothic One', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.15;
+}
+
+.title-kyo,
+.title-yuzen,
+.title-name {
+    font-family: inherit;
+    font-weight: inherit;
 }
 
 .title-kyo,
 .title-name {
-    color: var(--bmax-gold-1);
+    color: rgba(245, 246, 255, 0.96);
     text-shadow:
         0 1px 2px rgba(0, 0, 0, 0.55),
-        0 0 16px rgba(212, 175, 55, 0.35);
+        0 0 14px rgba(154, 77, 255, 0.45),
+        0 0 18px rgba(0, 183, 255, 0.25);
+    letter-spacing: 0.06em;
+}
+
+/* 英字「B-MAX GP」はロゴに近いタイト詰め */
+.title-kyo {
+    letter-spacing: 0.02em;
 }
 
 .title-yuzen {
-    color: rgba(255, 255, 255, 0.92);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.55);
+    color: rgba(0, 183, 255, 0.95);
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.55),
+        0 0 14px rgba(0, 183, 255, 0.35);
+    letter-spacing: 0.08em;
 }
 
-/* 親密度メーター：シアン→ゴールドへ */
+.title-name {
+    letter-spacing: 0.05em;
+}
+
+/* （メーターは削除済みだが、残っていてもネオンに寄せる） */
 .relationship-meter {
     background: linear-gradient(145deg, rgba(20, 20, 28, 0.72), rgba(10, 10, 15, 0.78));
-    border: 1px solid rgba(212, 175, 55, 0.35);
+    border: 1px solid rgba(0, 183, 255, 0.25);
     box-shadow:
         0 4px 22px rgba(0, 0, 0, 0.22),
+        0 0 18px rgba(154, 77, 255, 0.18),
         inset 0 1px 2px rgba(255, 255, 255, 0.06);
 }
 
 .level-badge {
-    color: var(--bmax-gold-1);
-    border-color: rgba(212, 175, 55, 0.45);
-    text-shadow: 0 0 8px rgba(212, 175, 55, 0.45);
+    color: rgba(0, 183, 255, 0.95);
+    border-color: rgba(154, 77, 255, 0.45);
+    text-shadow:
+        0 0 10px rgba(0, 183, 255, 0.45),
+        0 0 10px rgba(154, 77, 255, 0.25);
 }
 
 .relationship-progress {
     background: linear-gradient(90deg,
-        rgba(212, 175, 55, 0.25),
-        rgba(212, 175, 55, 0.40),
-        rgba(184, 134, 11, 0.45),
-        rgba(212, 175, 55, 0.55));
+        rgba(154, 77, 255, 0.22),
+        rgba(0, 183, 255, 0.35),
+        rgba(0, 183, 255, 0.52),
+        rgba(154, 77, 255, 0.42));
     box-shadow:
-        0 0 16px rgba(212, 175, 55, 0.35),
-        inset 0 0 10px rgba(212, 175, 55, 0.18);
+        0 0 16px rgba(0, 183, 255, 0.25),
+        0 0 14px rgba(154, 77, 255, 0.18),
+        inset 0 0 10px rgba(0, 183, 255, 0.10);
 }
 
-/* アシスタント吹き出し：サイバーシアン→B-MAX黒金パネル */
+/* アシスタント吹き出し：ネオン枠の黒パネル */
 .assistant-message {
     background: linear-gradient(135deg,
-        rgba(10, 10, 15, 0.96) 0%,
-        rgba(20, 20, 28, 0.94) 50%,
-        rgba(10, 10, 15, 0.96) 100%);
-    border: 2px solid var(--bmax-border);
+        rgba(7, 7, 17, 0.96) 0%,
+        rgba(13, 13, 26, 0.94) 50%,
+        rgba(7, 7, 17, 0.96) 100%);
+    border: 2px solid rgba(0, 183, 255, 0.38);
     box-shadow:
-        0 0 22px var(--bmax-glow),
+        0 0 18px var(--bmax-glow),
+        0 0 20px var(--bmax-glow-2),
         0 6px 22px rgba(0, 0, 0, 0.22),
-        inset 0 0 28px rgba(212, 175, 55, 0.08);
-    color: #fffaf0;
+        inset 0 0 28px rgba(0, 183, 255, 0.06);
+    color: rgba(245, 246, 255, 0.96);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
 }
 
@@ -119,9 +152,9 @@ body::after {
     background: linear-gradient(
         90deg,
         transparent 0%,
-        rgba(212, 175, 55, 0.10) 25%,
-        rgba(212, 175, 55, 0.18) 50%,
-        rgba(184, 134, 11, 0.12) 75%,
+        rgba(154, 77, 255, 0.10) 25%,
+        rgba(0, 183, 255, 0.16) 50%,
+        rgba(154, 77, 255, 0.10) 75%,
         transparent 100%
     );
 }
@@ -129,21 +162,23 @@ body::after {
 .assistant-message::after {
     background: linear-gradient(
         to bottom,
-        rgba(212, 175, 55, 0.14) 0%,
-        rgba(212, 175, 55, 0.06) 50%,
+        rgba(0, 183, 255, 0.10) 0%,
+        rgba(154, 77, 255, 0.06) 50%,
         transparent 100%
     );
 }
 
-/* ボタン・サジェスチョン：ゴールドに統一 */
+/* ボタン・サジェスチョン：ネオンに統一 */
 button,
 .input-toggle-button,
 .language-button,
 .mute-button,
 #voice-button {
-    color: var(--bmax-gold-1) !important;
-    border-color: rgba(212, 175, 55, 0.55) !important;
-    text-shadow: 0 0 10px rgba(212, 175, 55, 0.35) !important;
+    color: rgba(245, 246, 255, 0.96) !important;
+    border-color: rgba(0, 183, 255, 0.55) !important;
+    text-shadow:
+        0 0 10px rgba(0, 183, 255, 0.25),
+        0 0 10px rgba(154, 77, 255, 0.20) !important;
 }
 
 button:hover,
@@ -151,34 +186,80 @@ button:hover,
 .language-button:hover,
 .mute-button:hover,
 #voice-button:hover {
-    border-color: rgba(212, 175, 55, 0.85) !important;
+    border-color: rgba(154, 77, 255, 0.85) !important;
 }
 
 .suggestion-button {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(184, 134, 11, 0.26)) !important;
-    border-color: rgba(212, 175, 55, 0.55) !important;
+    background: linear-gradient(135deg,
+        rgba(154, 77, 255, 0.18),
+        rgba(0, 183, 255, 0.20)) !important;
+    border-color: rgba(0, 183, 255, 0.45) !important;
     box-shadow:
-        0 0 16px rgba(212, 175, 55, 0.35),
+        0 0 16px rgba(0, 183, 255, 0.22),
+        0 0 16px rgba(154, 77, 255, 0.16),
         0 2px 10px rgba(0, 0, 0, 0.18),
         inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
 }
 
 .suggestion-button:hover {
-    background: linear-gradient(135deg, rgba(212, 175, 55, 0.34), rgba(184, 134, 11, 0.36)) !important;
+    background: linear-gradient(135deg,
+        rgba(154, 77, 255, 0.28),
+        rgba(0, 183, 255, 0.32)) !important;
     box-shadow:
-        0 0 26px rgba(212, 175, 55, 0.55),
+        0 0 26px rgba(0, 183, 255, 0.35),
+        0 0 26px rgba(154, 77, 255, 0.25),
         0 4px 16px rgba(0, 0, 0, 0.22) !important;
 }
 
-/* スクロールバー：ゴールド */
+/* 入力欄：ネオン枠 */
+#message-input {
+    background: linear-gradient(135deg,
+        rgba(7, 7, 17, 0.86),
+        rgba(13, 13, 26, 0.82)) !important;
+    border: 1px solid rgba(0, 183, 255, 0.35) !important;
+    color: rgba(245, 246, 255, 0.96) !important;
+    box-shadow:
+        0 0 16px rgba(0, 183, 255, 0.14),
+        0 0 14px rgba(154, 77, 255, 0.12),
+        inset 0 0 18px rgba(0, 183, 255, 0.06) !important;
+}
+#message-input:focus {
+    border-color: rgba(154, 77, 255, 0.70) !important;
+    box-shadow:
+        0 0 22px rgba(154, 77, 255, 0.20),
+        0 0 18px rgba(0, 183, 255, 0.16),
+        inset 0 0 18px rgba(154, 77, 255, 0.06) !important;
+}
+
+/* 送信ボタン：ネオン */
+#send-button {
+    background: linear-gradient(135deg,
+        rgba(154, 77, 255, 0.30),
+        rgba(0, 183, 255, 0.28)) !important;
+    border: 1px solid rgba(0, 183, 255, 0.55) !important;
+    box-shadow:
+        0 0 18px rgba(0, 183, 255, 0.18),
+        0 0 16px rgba(154, 77, 255, 0.14) !important;
+}
+#send-button:hover {
+    background: linear-gradient(135deg,
+        rgba(154, 77, 255, 0.42),
+        rgba(0, 183, 255, 0.38)) !important;
+    border-color: rgba(154, 77, 255, 0.85) !important;
+    box-shadow:
+        0 0 26px rgba(0, 183, 255, 0.28),
+        0 0 22px rgba(154, 77, 255, 0.22) !important;
+}
+
+/* スクロールバー：ネオン */
 .chat-messages {
-    scrollbar-color: rgba(212, 175, 55, 0.55) transparent !important;
+    scrollbar-color: rgba(0, 183, 255, 0.50) transparent !important;
 }
 .chat-messages::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(212, 175, 55, 0.45), rgba(184, 134, 11, 0.55)) !important;
+    background: linear-gradient(180deg, rgba(154, 77, 255, 0.48), rgba(0, 183, 255, 0.58)) !important;
 }
 .chat-messages::-webkit-scrollbar-track {
-    background: rgba(212, 175, 55, 0.08) !important;
+    background: rgba(0, 183, 255, 0.07) !important;
 }
 
 /* 背景デザイン - カスタム背景画像 */
@@ -244,18 +325,20 @@ body::before {
 
 .main-title {
     font-size: 24px;
-    font-weight: 300;
+    font-weight: 400;
+    font-family: 'Dela Gothic One', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
     color: #2c3e50;
     display: flex;
     align-items: baseline;
     gap: 12px;
     position: relative;
+    letter-spacing: 0.02em;
 }
 
 .title-kyo {
-    font-weight: 700;
-    font-size: 32px;
-    letter-spacing: 3px;
+    font-weight: 400;
+    font-size: 28px;
+    letter-spacing: 0.04em;
     color: #0097a7;
     text-shadow: 
         0 1px 2px rgba(255, 255, 255, 0.9),
@@ -266,8 +349,8 @@ body::before {
 
 .title-yuzen {
     font-weight: 400;
-    font-size: 18px;
-    letter-spacing: 2px;
+    font-size: 17px;
+    letter-spacing: 0.08em;
     color: #00acc1;
     text-shadow: 
         0 1px 2px rgba(255, 255, 255, 0.9),
@@ -276,9 +359,9 @@ body::before {
 }
 
 .title-name {
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 2px;
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0.05em;
     color: #0097a7;
     text-shadow: 
         0 1px 2px rgba(255, 255, 255, 0.9),

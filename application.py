@@ -886,6 +886,8 @@ def get_session_data(session_id):
             'user_type': None,  # 'business' or 'student'
             'selected_suggestions_count': 0  # Phase判定用カウント
         }
+    # アプリは日本語のみ（旧セッションの en を矯正）
+    session_data[session_id]['language'] = 'ja'
     return session_data[session_id]
 
 def get_visitor_data(visitor_id):
@@ -899,7 +901,7 @@ def get_visitor_data(visitor_id):
             'topics_discussed': [],
             'personality_traits': {},
             'relationship_level': 0,
-            'selected_suggestions': set()
+            'selected_suggestions': []
         }
     return visitor_data[visitor_id]
 
@@ -1029,20 +1031,9 @@ def adjust_response_style(response, language='ja', relationship_style='formal'):
     import re
     
     if language == 'ja':
-        if relationship_style == 'casual':
-            # カジュアルな日本語に変換
-            response = response.replace("です。", "だよ。")
-            response = response.replace("でしょう。", "だよね。")
-            response = response.replace("ですか?", "?")
-            # 🔧 修正: 「ます。」の適切な処理（正規表現不使用、安全な置換のみ）
-            # 問題: 「なってしまいます」→「なってしまいるよ」を防ぐ
-            # 解決: 単純な置換は削除（フォーマル体のまま維持）
-        elif relationship_style == 'friendly':
-            # フレンドリーな日本語
-            response = response.replace("です。", "だよ〜。")
-            # 🔧 修正: 「ます。」の適切な処理
-            # 問題: 「なってしまいます」→「なってしまいるね!」を防ぐ
-            # 解決: 単純な置換は削除（フォーマル体のまま維持）
+        # Mr.永見: 口調は常に「です・ます」に統一（relationship_style による崩しを無効化）
+        # relationship_style 自体は残すが、ここでは文体を変えない。
+        pass
     elif language == 'en':
         if relationship_style == 'casual':
             # カジュアルな英語に変換
@@ -1065,10 +1056,8 @@ def adjust_response_style(response, language='ja', relationship_style='formal'):
                 return translation.choices[0].message.content
             except Exception as e:
                 print(f"翻訳エラー: {e}")
-                response = response.replace("だよね", ", right?")
-                response = response.replace("だよ", "")
-                response = response.replace("じゃん", ", you know")
-                response = response.replace("だし", ", and")
+                # フォールバックでも口調変換は行わない（です・ます統一）
+                pass
     return response
 
 # ====== 【修正箇所2】改善された感情分析関数(9種類対応) ======
@@ -1235,7 +1224,7 @@ def generate_prioritized_suggestions(session_info, visitor_info, relationship_st
     """
     try:
         # 🔧 修正: 正しい関数名でインポート
-        from modules.static_qa_data import get_suggestions_for_phase, get_current_phase
+        from modules.static_qa_data import get_suggestions_for_phase, get_current_phase, dedupe_preserve_order
         
         # 選択済みサジェスチョンを取得(リスト形式に統一)
         selected_suggestions = []
@@ -1250,14 +1239,14 @@ def generate_prioritized_suggestions(session_info, visitor_info, relationship_st
         
         # 訪問者情報から取得
         if visitor_info and 'selected_suggestions' in visitor_info:
-            visitor_selected = visitor_info.get('selected_suggestions', set())
+            visitor_selected = visitor_info.get('selected_suggestions', [])
             if isinstance(visitor_selected, set):
                 selected_suggestions.extend(list(visitor_selected))
             elif isinstance(visitor_selected, list):
                 selected_suggestions.extend(visitor_selected)
         
-        # 重複を除去
-        selected_suggestions = list(set(selected_suggestions))
+        # 重複を除去（順序は維持：サブサジェスチョン階層判定に必須）
+        selected_suggestions = dedupe_preserve_order(selected_suggestions)
         
         # 現在の段階を判定(選択済みサジェスチョン数から自動判定)
         suggestions_count = len(selected_suggestions)
@@ -1346,9 +1335,12 @@ def update_visitor_data(visitor_id, session_info):
         # 関係性スタイルの更新
         v_data['relationship_style'] = session_info.get('relationship_style', 'formal')
         
-        # 選択されたサジェスチョンの更新
-        for suggestion in session_info.get('selected_suggestions', []):
-            v_data['selected_suggestions'].add(suggestion)
+        # 選択されたサジェスチョンの更新（順序維持）
+        from modules.static_qa_data import dedupe_preserve_order
+        sess = session_info.get('selected_suggestions', [])
+        if isinstance(sess, list) and sess:
+            merged = dedupe_preserve_order(list(v_data.get('selected_suggestions', [])) + sess)
+            v_data['selected_suggestions'] = merged
 
 def update_emotion_history(session_id, emotion, mental_state=None):
     """🎯 感情履歴を更新"""
@@ -1597,7 +1589,7 @@ def handle_user_type_selection(data):
     
     session_id = request.sid
     user_type = data.get('type', 'business')  # 'business' or 'student'
-    language = data.get('language', 'ja')
+    language = 'ja'
     
     print(f"📋 ユーザー属性選択: {user_type} (Session: {session_id})")
     
@@ -1853,7 +1845,8 @@ def handle_connect():
 @socketio.on('set_language')
 def handle_set_language(data):
     session_id = request.sid
-    language = data.get('language', 'ja')
+    # アプリは日本語のみ（英語切替を無効化）
+    language = 'ja'
     
     session_info = get_session_data(session_id)
     session_info['language'] = language
@@ -2063,16 +2056,28 @@ def handle_message(data):
         if visitor_id:
             session_info['visitor_id'] = visitor_id
         
-        # ✅ クライアントから送信された選択済みサジェスチョンをセッションに保存
-        if selected_suggestions_from_client:
+        # サジェスチョンのナビ（戻る＝コンテキストリセット）
+        from modules.static_qa_data import get_navigation_action
+        nav_action = get_navigation_action(message)
+        clear_selected_suggestions_flag = False
+        
+        if nav_action == 'back':
+            session_info['selected_suggestions'] = []
+            session_info['selected_suggestions_count'] = 0
+            if visitor_id and visitor_id in visitor_data:
+                visitor_data[visitor_id]['selected_suggestions'] = []
+            clear_selected_suggestions_flag = True
+            print("🔙 サジェスチョン: 主要項目へ戻る（選択履歴をクリア）")
+        elif selected_suggestions_from_client:
+            # ✅ クライアントから送信された選択済みサジェスチョンをセッションに保存（順序を維持）
             session_info['selected_suggestions'] = list(selected_suggestions_from_client)
             print(f"📝 Selected suggestions updated from client: {len(selected_suggestions_from_client)} items")
             print(f"📊 Selected suggestions: {selected_suggestions_from_client}")
         
-        # 訪問者データにも保存
+        # 訪問者データにも保存（順序維持のため list）
         if visitor_id and visitor_id in visitor_data:
-            if selected_suggestions_from_client:
-                visitor_data[visitor_id]['selected_suggestions'] = set(selected_suggestions_from_client)
+            if selected_suggestions_from_client and not clear_selected_suggestions_flag:
+                visitor_data[visitor_id]['selected_suggestions'] = list(selected_suggestions_from_client)
                 print(f"👤 Visitor {visitor_id}: {len(selected_suggestions_from_client)} suggestions recorded")
         
         # 関係性レベルを計算
@@ -2205,7 +2210,7 @@ def handle_message(data):
             audio_data = None
         
         # 🆕 サジェスチョンカウントの更新（選択済みサジェスチョン数から計算）
-        if selected_suggestions_from_client:
+        if selected_suggestions_from_client and not clear_selected_suggestions_flag:
             # 新しく選択されたサジェスチョンの数をカウント
             previous_count = session_info.get('selected_suggestions_count', 0)
             current_count = len(selected_suggestions_from_client)
@@ -2270,7 +2275,8 @@ def handle_message(data):
             'suggestions': suggestions,
             'relationshipLevel': relationship_style,
             'interactionCount': session_info['interaction_count'],
-            'mentalState': mental_state
+            'mentalState': mental_state,
+            'clearSelectedSuggestions': clear_selected_suggestions_flag,
         }
         
         # メディアデータがある場合のみ追加（後方互換性維持）
@@ -2426,7 +2432,7 @@ def handle_quiz_declined():
     language = session_info.get('language', 'ja')
     
     decline_text = {
-        'ja': 'わかった！また挑戦したくなったら声をかけてね！',
+        'ja': '承知しました。また挑戦したくなりましたら、お声がけください。',
         'en': 'Okay! Let me know when you want to try!'
     }
     
@@ -2456,7 +2462,7 @@ def handle_quiz_quit():
     language = session_info.get('language', 'ja')
     
     quit_text = {
-        'ja': 'わかった！準備ができたらまた挑戦してね！',
+        'ja': '承知しました。準備が整いましたら、また挑戦してください。',
         'en': 'Okay! Come back when you\'re ready!'
     }
     

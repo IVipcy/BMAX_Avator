@@ -263,6 +263,11 @@
             return this.visitData.selectedSuggestions || [];
         }
         
+        clearSelectedSuggestions() {
+            this.visitData.selectedSuggestions = [];
+            this.saveVisitData();
+        }
+        
         saveVisitData() {
             localStorage.setItem('visit_data', JSON.stringify(this.visitData));
         }
@@ -623,7 +628,8 @@
         // initializeSystemSounds(); // 効果音機能は無効化
         initializeRelationshipLevel();
         loadMuteState();
-        showLanguageModal();
+        // 日本語固定：起動時モーダルは出さずサーバにも ja を通知
+        selectLanguage('ja');
         
         // 訪問者情報をサーバーに送信
         sendVisitorInfo();
@@ -769,17 +775,7 @@
             domElements.muteButton.addEventListener('click', toggleMute);
         }
         
-        if (domElements.changeLanguageBtn) {
-            domElements.changeLanguageBtn.addEventListener('click', showLanguageModal);
-        }
-        
-        if (domElements.selectJapanese) {
-            domElements.selectJapanese.addEventListener('click', () => selectLanguage('ja'));
-        }
-        
-        if (domElements.selectEnglish) {
-            domElements.selectEnglish.addEventListener('click', () => selectLanguage('en'));
-        }
+        // 言語切替UIは廃止（日本語のみ）
         
         if (domElements.inputToggle) {
             domElements.inputToggle.addEventListener('click', toggleInputArea);
@@ -920,9 +916,11 @@
                 }
                 
                 // 🔧 v3.0: Masterレベルに昇格（アンケート回答完了時）
-                domElements.relationshipLevel.innerHTML = `
+                if (domElements.relationshipLevel) {
+                    domElements.relationshipLevel.innerHTML = `
                     <div class="level-badge master-badge">Master</div>
                 `;
+                }
                 visitorManager.visitData.relationshipLevel = 5;
                 visitorManager.visitData.quizCompleted = true;
                 visitorManager.saveVisitData();
@@ -1157,25 +1155,13 @@
         }
     }
     
-    // ====== 言語設定 ======
+    // ====== 言語設定（日本語のみ・英語UIは無効） ======
     function showLanguageModal() {
-        if (!domElements.languageModal) {
-            console.error('❌ 言語選択モーダルが見つかりません');
-            selectLanguage('ja');
-            return;
-        }
-        
-        // Unity iframeを一時的に非表示にする（モーダルのクリックを可能にするため）
-        if (domElements.unityFrame) {
-            domElements.unityFrame.style.display = 'none';
-            console.log('🎮 Unity iframeを一時的に非表示にしました');
-        }
-        
-        domElements.languageModal.style.display = 'flex';
-        console.log('✅ 言語選択モーダル表示完了');
+        selectLanguage('ja');
     }
     
     function selectLanguage(language) {
+        language = 'ja';
         appState.currentLanguage = language;
         
         if (socket && socket.connected) {
@@ -1193,16 +1179,15 @@
             domElements.languageModal.style.display = 'none';
         }
         
-        // Unity iframeを再表示する
         if (domElements.unityFrame) {
             domElements.unityFrame.style.display = 'block';
-            console.log('🎮 Unity iframeを再表示しました');
         }
         
         initializeAudioContextAfterUserGesture();
     }
     
     function updateUILanguage(language) {
+        language = 'ja';
         const translations = {
             ja: {
                 languageDisplay: '言語: 日本語',
@@ -1214,19 +1199,9 @@
                 statusProcessing: '処理中...',
                 relationshipLabel: '理解度'
             },
-            en: {
-                languageDisplay: 'Language: English',
-                messagePlaceholder: 'Type a message...',
-                sendButton: 'Send',
-                voiceButton: '🎤',
-                statusConnected: 'Connected',
-                statusDisconnected: 'Disconnected',
-                statusProcessing: 'Processing...',
-                relationshipLabel: 'Understanding'
-            }
         };
         
-        const t = translations[language];
+        const t = translations.ja;
         
         if (domElements.currentLanguageDisplay) {
             domElements.currentLanguageDisplay.textContent = t.languageDisplay;
@@ -1249,16 +1224,14 @@
         if (domElements.inputToggle) {
             const isExpanded = domElements.inputArea?.classList.contains('expanded');
             if (isExpanded) {
-                const closeText = language === 'ja' ? '閉じる' : 'Close';
-                domElements.inputToggle.innerHTML = `<i>✕</i><span>${closeText}</span>`;
+                domElements.inputToggle.innerHTML = `<i>✕</i><span>閉じる</span>`;
             } else {
-                const buttonText = language === 'ja' ? 'メッセージを入力' : 'Type a message';
-                domElements.inputToggle.innerHTML = `<i>💬</i><span>${buttonText}</span>`;
+                domElements.inputToggle.innerHTML = `<i>💬</i><span>メッセージを入力</span>`;
             }
         }
         
         try {
-            localStorage.setItem('preferred_language', language);
+            localStorage.setItem('preferred_language', 'ja');
         } catch (e) {
             console.warn('言語設定の保存に失敗:', e);
         }
@@ -2615,13 +2588,11 @@
         updateConnectionStatus('connected');
         
         try {
-            const savedLanguage = localStorage.getItem('preferred_language');
-            if (savedLanguage && (savedLanguage === 'ja' || savedLanguage === 'en')) {
-                selectLanguage(savedLanguage);
-            }
+            localStorage.setItem('preferred_language', 'ja');
         } catch (e) {
-            console.warn('保存済み言語設定の読み込みに失敗:', e);
+            console.warn('言語設定の保存に失敗:', e);
         }
+        selectLanguage('ja');
         
         const visitorTimer = setTimeout(() => {
             sendVisitorInfo();
@@ -2634,8 +2605,8 @@
     
     function handleLanguageUpdate(data) {
         console.log('言語が設定/変更されました:', data.language);
-        appState.currentLanguage = data.language;
-        updateUILanguage(data.language);
+        appState.currentLanguage = 'ja';
+        updateUILanguage('ja');
         
         // 言語切り替えによる挨拶が来ることを通知
         expectingLanguageChangeGreeting = true;
@@ -2762,6 +2733,11 @@
             appState.lastResponseTime = Date.now();
             
             console.log('📨 応答受信:', data);
+            
+            if (data.clearSelectedSuggestions) {
+                visitorManager.clearSelectedSuggestions();
+                console.log('🔙 サーバー指示: 選択済みサジェスチョンをクリア');
+            }
             
             // メディアデータがあるか確認
             const hasMedia = data.media && (data.media.images?.length > 0 || data.media.videos?.length > 0);
@@ -3476,8 +3452,8 @@
         
         // 🎯 新規追加: 追加メッセージを表示
         const additionalMessage = isJapanese 
-            ? '他に何か知りたいことがあったら何でも質問してね！' 
-            : 'Feel free to ask me anything else you\'d like to know!';
+            ? 'ほかに確認したいことがありましたら、お気軽にご質問ください。' 
+            : 'If you have anything else you would like to confirm, please feel free to ask.';
         
         setTimeout(() => {
             const messageWrapper = addMessage(additionalMessage, false, { skipSound: true });
