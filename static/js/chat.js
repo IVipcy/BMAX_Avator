@@ -1802,9 +1802,17 @@
         const suggestionsContainer = document.createElement('div');
         suggestionsContainer.className = 'message-suggestions';
         
+        const SUGGESTION_FREE_INPUT = '自由入力で具体条件を書く';
+        const SUGGESTION_BACK_MAIN = '戻る（主要項目へ）';
+        
         suggestions.forEach((suggestion, index) => {
             const button = document.createElement('button');
             button.className = 'suggestion-button';
+            if (suggestion === SUGGESTION_FREE_INPUT) {
+                button.classList.add('suggestion-button--nav', 'suggestion-button--free-input');
+            } else if (suggestion === SUGGESTION_BACK_MAIN) {
+                button.classList.add('suggestion-button--nav', 'suggestion-button--back-main');
+            }
             button.textContent = suggestion;
             button.style.animationDelay = `${index * 0.1}s`;
             

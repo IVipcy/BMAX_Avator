@@ -18,8 +18,8 @@ body {
     padding: 0;
     font-family: 'Helvetica Neue', Arial, sans-serif;
     line-height: 1.6;
-    color: #2c3e50;
-    background: #f0f5f9;
+    color: rgba(255, 255, 255, 0.92);
+    background: #0a1018;
     overflow-x: hidden;
 }
 
@@ -29,35 +29,46 @@ body {
    ============================================================ */
 
 :root {
-    --bmax-gold-1: #9a4dff; /* neon purple */
-    --bmax-gold-2: #00b7ff; /* neon cyan */
-    --bmax-ink-1: #070711;
-    --bmax-ink-2: #0d0d1a;
-    --bmax-cream: rgba(245, 246, 255, 0.92);
-    --bmax-border: rgba(154, 77, 255, 0.62);
-    --bmax-glow: rgba(0, 183, 255, 0.38);
-    --bmax-glow-2: rgba(154, 77, 255, 0.34);
+    /* Header.png：左マゼンタ／紫 → 右エレクトリックブルー〜シアン のグラデに合わせる */
+    --bmax-neon-cyan: #00e8ff;
+    --bmax-neon-cyan-soft: rgba(0, 232, 255, 0.55);
+    --bmax-neon-blue: #3d9fff;
+    --bmax-neon-magenta-core: rgba(200, 60, 255, 0.55);
+    --bmax-panel: rgba(32, 40, 72, 0.78);
+    --bmax-panel-deep: rgba(14, 22, 42, 0.9);
+    --bmax-ink-1: #070a10;
+    --bmax-ink-2: #0d1520;
+    --bmax-text: #ffffff;
+    --bmax-border-cyan: rgba(0, 230, 255, 0.72);
+    --bmax-glow-cyan: rgba(0, 230, 255, 0.35);
+    --bmax-glow-blue: rgba(80, 170, 255, 0.38);
+    /* ナビ：左＝マゼンタ系（ヘッダー左）、右＝ブルー系（ヘッダー右） */
+    --bmax-neon-magenta: rgba(255, 95, 200, 0.95);
 }
 
 /* 背景は既存画像を活かしつつ、ネオンの薄いベールを載せる */
+/* Header.png と同じ「左マゼンタ／紫・右ブルー／シアン」の空気感 */
 body::after {
     content: "";
     position: fixed;
     inset: 0;
     background:
-        radial-gradient(1200px 600px at 20% 18%, rgba(154, 77, 255, 0.22), transparent 60%),
-        radial-gradient(900px 520px at 78% 22%, rgba(0, 183, 255, 0.18), transparent 58%),
-        radial-gradient(760px 420px at 65% 70%, rgba(154, 77, 255, 0.10), transparent 62%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.40));
+        radial-gradient(900px 480px at 8% 35%, rgba(180, 60, 255, 0.16), transparent 55%),
+        radial-gradient(700px 420px at 22% 12%, rgba(255, 80, 200, 0.10), transparent 50%),
+        radial-gradient(1100px 600px at 88% 25%, rgba(0, 160, 255, 0.14), transparent 58%),
+        radial-gradient(900px 520px at 72% 65%, rgba(0, 220, 240, 0.10), transparent 55%),
+        linear-gradient(
+            100deg,
+            rgba(40, 0, 60, 0.12) 0%,
+            rgba(5, 15, 40, 0.08) 45%,
+            rgba(0, 30, 55, 0.10) 100%
+        ),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.44));
     z-index: -1;
     pointer-events: none;
 }
 
-/* ヘッダー：画像の上にネオンライン＋読みやすい文字 */
-.fixed-header {
-    border-bottom: 1px solid rgba(0, 183, 255, 0.35);
-    box-shadow: 0 2px 18px rgba(0, 0, 0, 0.18);
-}
+/* ヘッダー先頭のネオンラインは下の .fixed-header（詳細）と統合 */
 
 /* タイトル：ネオン寄せ */
 .main-title {
@@ -76,25 +87,19 @@ body::after {
 }
 
 .title-kyo,
+.title-yuzen,
 .title-name {
-    color: rgba(245, 246, 255, 0.96);
-    text-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.55),
-        0 0 14px rgba(154, 77, 255, 0.45),
-        0 0 18px rgba(0, 183, 255, 0.25);
-    letter-spacing: 0.06em;
+    color: #ffffff;
+    text-shadow: none;
 }
 
-/* 英字「B-MAX GP」はロゴに近いタイト詰め */
+/* 「B-MAX GP」は斜体（ロゴ感） */
 .title-kyo {
-    letter-spacing: 0.02em;
+    font-style: italic;
+    letter-spacing: 0.04em;
 }
 
 .title-yuzen {
-    color: rgba(0, 183, 255, 0.95);
-    text-shadow:
-        0 1px 2px rgba(0, 0, 0, 0.55),
-        0 0 14px rgba(0, 183, 255, 0.35);
     letter-spacing: 0.08em;
 }
 
@@ -132,83 +137,26 @@ body::after {
         inset 0 0 10px rgba(0, 183, 255, 0.10);
 }
 
-/* アシスタント吹き出し：ネオン枠の黒パネル */
-.assistant-message {
-    background: linear-gradient(135deg,
-        rgba(7, 7, 17, 0.96) 0%,
-        rgba(13, 13, 26, 0.94) 50%,
-        rgba(7, 7, 17, 0.96) 100%);
-    border: 2px solid rgba(0, 183, 255, 0.38);
-    box-shadow:
-        0 0 18px var(--bmax-glow),
-        0 0 20px var(--bmax-glow-2),
-        0 6px 22px rgba(0, 0, 0, 0.22),
-        inset 0 0 28px rgba(0, 183, 255, 0.06);
-    color: rgba(245, 246, 255, 0.96);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
-}
+/* アシスタント吹き出しの先頭ブロックは下の詳細定義に統合（重複回避） */
 
-.assistant-message::before {
-    background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(154, 77, 255, 0.10) 25%,
-        rgba(0, 183, 255, 0.16) 50%,
-        rgba(154, 77, 255, 0.10) 75%,
-        transparent 100%
-    );
-}
-
-.assistant-message::after {
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 183, 255, 0.10) 0%,
-        rgba(154, 77, 255, 0.06) 50%,
-        transparent 100%
-    );
-}
-
-/* ボタン・サジェスチョン：ネオンに統一 */
-button,
+/* コントロール・入力系のみ（サジェスチョンは別定義） */
+.control-button,
 .input-toggle-button,
-.language-button,
 .mute-button,
-#voice-button {
-    color: rgba(245, 246, 255, 0.96) !important;
-    border-color: rgba(0, 183, 255, 0.55) !important;
-    text-shadow:
-        0 0 10px rgba(0, 183, 255, 0.25),
-        0 0 10px rgba(154, 77, 255, 0.20) !important;
+#voice-button,
+#send-button {
+    color: rgba(255, 255, 255, 0.96) !important;
+    border-color: var(--bmax-border-cyan) !important;
+    text-shadow: none !important;
 }
 
-button:hover,
+.control-button:hover,
 .input-toggle-button:hover,
-.language-button:hover,
 .mute-button:hover,
-#voice-button:hover {
-    border-color: rgba(154, 77, 255, 0.85) !important;
-}
-
-.suggestion-button {
-    background: linear-gradient(135deg,
-        rgba(154, 77, 255, 0.18),
-        rgba(0, 183, 255, 0.20)) !important;
-    border-color: rgba(0, 183, 255, 0.45) !important;
-    box-shadow:
-        0 0 16px rgba(0, 183, 255, 0.22),
-        0 0 16px rgba(154, 77, 255, 0.16),
-        0 2px 10px rgba(0, 0, 0, 0.18),
-        inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-}
-
-.suggestion-button:hover {
-    background: linear-gradient(135deg,
-        rgba(154, 77, 255, 0.28),
-        rgba(0, 183, 255, 0.32)) !important;
-    box-shadow:
-        0 0 26px rgba(0, 183, 255, 0.35),
-        0 0 26px rgba(154, 77, 255, 0.25),
-        0 4px 16px rgba(0, 0, 0, 0.22) !important;
+#voice-button:hover,
+#send-button:hover {
+    border-color: var(--bmax-neon-cyan) !important;
+    box-shadow: 0 0 14px var(--bmax-glow-cyan) !important;
 }
 
 /* 入力欄：ネオン枠 */
@@ -231,35 +179,31 @@ button:hover,
         inset 0 0 18px rgba(154, 77, 255, 0.06) !important;
 }
 
-/* 送信ボタン：ネオン */
+/* 送信ボタン：シアンネオン */
 #send-button {
     background: linear-gradient(135deg,
-        rgba(154, 77, 255, 0.30),
-        rgba(0, 183, 255, 0.28)) !important;
-    border: 1px solid rgba(0, 183, 255, 0.55) !important;
-    box-shadow:
-        0 0 18px rgba(0, 183, 255, 0.18),
-        0 0 16px rgba(154, 77, 255, 0.14) !important;
+        rgba(0, 120, 160, 0.55),
+        rgba(0, 70, 100, 0.65)) !important;
+    border: 1px solid var(--bmax-border-cyan) !important;
+    box-shadow: 0 0 16px var(--bmax-glow-cyan) !important;
 }
 #send-button:hover {
     background: linear-gradient(135deg,
-        rgba(154, 77, 255, 0.42),
-        rgba(0, 183, 255, 0.38)) !important;
-    border-color: rgba(154, 77, 255, 0.85) !important;
-    box-shadow:
-        0 0 26px rgba(0, 183, 255, 0.28),
-        0 0 22px rgba(154, 77, 255, 0.22) !important;
+        rgba(0, 160, 200, 0.65),
+        rgba(0, 90, 130, 0.75)) !important;
+    border-color: var(--bmax-neon-cyan) !important;
+    box-shadow: 0 0 22px var(--bmax-glow-cyan) !important;
 }
 
-/* スクロールバー：ネオン */
+/* スクロールバー：ネオン（詳細は下の .chat-messages と整合） */
 .chat-messages {
-    scrollbar-color: rgba(0, 183, 255, 0.50) transparent !important;
+    scrollbar-color: rgba(0, 200, 230, 0.45) transparent !important;
 }
 .chat-messages::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(154, 77, 255, 0.48), rgba(0, 183, 255, 0.58)) !important;
+    background: linear-gradient(180deg, rgba(0, 180, 220, 0.45), rgba(100, 140, 220, 0.5)) !important;
 }
 .chat-messages::-webkit-scrollbar-track {
-    background: rgba(0, 183, 255, 0.07) !important;
+    background: rgba(0, 40, 60, 0.2) !important;
 }
 
 /* 背景デザイン - カスタム背景画像 */
@@ -291,7 +235,7 @@ body::before {
 }
 */
 
-/* ヘッダー */
+/* ヘッダー（Header.png ＋ 上辺シアンネオン） */
 .fixed-header {
     position: fixed;
     top: 0;
@@ -303,9 +247,12 @@ body::before {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
     z-index: 100;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-top: 1px solid rgba(0, 232, 255, 0.55);
+    border-bottom: 1px solid rgba(0, 232, 255, 0.35);
+    box-shadow:
+        0 0 24px rgba(0, 232, 255, 0.22),
+        0 6px 28px rgba(0, 0, 0, 0.45);
 }
 
 .header-content {
@@ -327,23 +274,22 @@ body::before {
     font-size: 24px;
     font-weight: 400;
     font-family: 'Dela Gothic One', 'Zen Kaku Gothic New', 'Noto Sans JP', sans-serif;
-    color: #2c3e50;
+    color: #ffffff;
     display: flex;
     align-items: baseline;
     gap: 12px;
     position: relative;
     letter-spacing: 0.02em;
+    text-shadow: none;
 }
 
 .title-kyo {
     font-weight: 400;
     font-size: 28px;
     letter-spacing: 0.04em;
-    color: #0097a7;
-    text-shadow: 
-        0 1px 2px rgba(255, 255, 255, 0.9),
-        0 0 8px rgba(255, 255, 255, 0.7),
-        1px 1px 0 rgba(0, 151, 167, 0.3);
+    color: #ffffff;
+    text-shadow: none;
+    font-style: italic;
     position: relative;
 }
 
@@ -351,10 +297,8 @@ body::before {
     font-weight: 400;
     font-size: 17px;
     letter-spacing: 0.08em;
-    color: #00acc1;
-    text-shadow: 
-        0 1px 2px rgba(255, 255, 255, 0.9),
-        0 0 6px rgba(255, 255, 255, 0.6);
+    color: #ffffff;
+    text-shadow: none;
     position: relative;
 }
 
@@ -362,11 +306,8 @@ body::before {
     font-size: 24px;
     font-weight: 400;
     letter-spacing: 0.05em;
-    color: #0097a7;
-    text-shadow: 
-        0 1px 2px rgba(255, 255, 255, 0.9),
-        0 0 8px rgba(255, 255, 255, 0.7),
-        1px 1px 0 rgba(0, 151, 167, 0.3);
+    color: #ffffff;
+    text-shadow: none;
     position: relative;
 }
 
@@ -404,17 +345,22 @@ body::before {
 }
 
 .mute-button {
-    background: linear-gradient(145deg, #5a8ca8, #4a7591);
-    color: white;
+    background: linear-gradient(145deg, rgba(30, 55, 75, 0.95), rgba(18, 32, 48, 0.98));
+    color: #ffffff;
+    border: 1px solid var(--bmax-border-cyan) !important;
+    box-shadow: 0 0 12px var(--bmax-glow-cyan);
 }
 
 .mute-button:hover {
-    transform: scale(1.1) rotate(5deg);
-    box-shadow: 0 4px 10px rgba(90, 140, 168, 0.4);
+    transform: scale(1.06);
+    box-shadow: 0 0 18px var(--bmax-glow-cyan);
+    border-color: var(--bmax-neon-cyan) !important;
 }
 
 .mute-button.muted {
-    background: linear-gradient(145deg, #8b7355, #6d5a44);
+    background: linear-gradient(145deg, rgba(55, 40, 30, 0.95), rgba(35, 28, 22, 0.98));
+    border-color: rgba(255, 160, 90, 0.6) !important;
+    box-shadow: 0 0 12px rgba(255, 160, 90, 0.25);
 }
 
 .language-button {
@@ -721,6 +667,73 @@ body::before {
     pointer-events: auto;
 }
 
+/* Header.png 風：水平のネオンスリーク（レンズフレア感）— 装飾のみ・操作は下層 */
+.chat-container::before {
+    content: "";
+    position: absolute;
+    left: -5%;
+    right: -5%;
+    top: 14%;
+    height: 2px;
+    z-index: 1;
+    pointer-events: none;
+    border-radius: 2px;
+    opacity: 0.55;
+    background: linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(200, 70, 255, 0.5) 12%,
+        rgba(255, 255, 255, 0.55) 48%,
+        rgba(0, 210, 255, 0.55) 78%,
+        transparent 100%
+    );
+    box-shadow:
+        0 0 14px rgba(0, 230, 255, 0.35),
+        0 0 28px rgba(180, 80, 255, 0.22),
+        0 0 40px rgba(255, 255, 255, 0.08);
+    animation: bmaxChatFlareDrift 10s ease-in-out infinite;
+}
+
+.chat-container::after {
+    content: "";
+    position: absolute;
+    left: -8%;
+    right: -8%;
+    top: 48%;
+    height: 1px;
+    z-index: 1;
+    pointer-events: none;
+    opacity: 0.35;
+    background: linear-gradient(
+        90deg,
+        transparent 5%,
+        rgba(80, 170, 255, 0.45) 35%,
+        rgba(0, 240, 255, 0.35) 62%,
+        rgba(255, 120, 220, 0.25) 88%,
+        transparent 100%
+    );
+    box-shadow: 0 0 18px rgba(0, 200, 255, 0.2);
+    animation: bmaxChatFlareDrift 14s ease-in-out infinite reverse;
+}
+
+@keyframes bmaxChatFlareDrift {
+    0%, 100% {
+        opacity: 0.4;
+        transform: translateX(-1%) scaleX(0.98);
+    }
+    50% {
+        opacity: 0.65;
+        transform: translateX(1%) scaleX(1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .chat-container::before,
+    .chat-container::after {
+        animation: none;
+    }
+}
+
 /* チャットメッセージ */
 .chat-messages {
     flex: 1;
@@ -730,11 +743,12 @@ body::before {
     padding-bottom: 100px;
     background: transparent;
     position: relative;
+    z-index: 2;
     min-height: 0;
     max-height: 100%;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin !important;
-    scrollbar-color: rgba(212, 175, 55, 0.4) transparent !important;
+    scrollbar-color: rgba(0, 200, 230, 0.45) transparent !important;
 }
 
 /* スクロールバー強制表示 */
@@ -746,18 +760,18 @@ body::before {
 }
 
 .chat-messages::-webkit-scrollbar-track {
-    background: rgba(90, 140, 168, 0.08) !important;
+    background: rgba(0, 40, 60, 0.25) !important;
     border-radius: 10px !important;
 }
 
 .chat-messages::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, rgba(90, 140, 168, 0.5), rgba(74, 117, 145, 0.6)) !important;
+    background: linear-gradient(180deg, rgba(0, 180, 220, 0.45), rgba(100, 140, 220, 0.5)) !important;
     border-radius: 10px !important;
     min-height: 30px !important;
 }
 
 .chat-messages::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, rgba(90, 140, 168, 0.7), rgba(74, 117, 145, 0.8)) !important;
+    background: linear-gradient(180deg, rgba(0, 220, 255, 0.55), rgba(120, 170, 255, 0.55)) !important;
 }
 
 /* メッセージラッパー */
@@ -784,158 +798,88 @@ body::before {
     animation: fadeIn 0.3s ease-out;
 }
 
-/* ユーザーメッセージ：プレミアム透明クリスタル */
+/* ユーザーメッセージ：Header 系・ダークパネル＋シアン枠（右寄せ） */
 .user-message {
-    background: linear-gradient(135deg,
-        rgba(255, 255, 255, 0.15) 0%,
-        rgba(255, 255, 255, 0.08) 50%,
-        rgba(255, 255, 255, 0.12) 100%);
-    backdrop-filter: blur(50px) saturate(180%) contrast(110%) brightness(108%);
-    -webkit-backdrop-filter: blur(50px) saturate(180%) contrast(110%) brightness(108%);
-    color: #1a1a1a;
+    background: var(--bmax-panel);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: #ffffff;
     font-weight: 500;
-    text-shadow: 0 0.5px 1px rgba(255, 255, 255, 0.5);
+    text-shadow: none;
     padding: 13px 19px;
-    border-radius: 22px 22px 6px 22px;
+    border-radius: 20px 20px 6px 20px;
     margin-left: auto;
     margin-right: 10px;
-    border: 1.5px solid rgba(255, 255, 255, 0.25);
-    box-shadow: 
-        0 8px 35px rgba(0, 0, 0, 0.08),
-        0 3px 15px rgba(255, 255, 255, 0.1),
-        inset 0 0 25px rgba(255, 255, 255, 0.08),
-        inset 0 1px 2px rgba(255, 255, 255, 0.15),
-        inset 0 -1px 2px rgba(0, 0, 0, 0.03);
+    border: 1px solid var(--bmax-border-cyan);
+    box-shadow:
+        0 0 18px var(--bmax-glow-cyan),
+        0 8px 24px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     position: relative;
     overflow: hidden;
     letter-spacing: 0.2px;
     line-height: 1.65;
 }
 
-/* 虹色のプリズム効果（控えめ） */
 .user-message::before {
     content: '';
     position: absolute;
-    top: -100%;
-    left: -100%;
-    width: 300%;
-    height: 300%;
+    inset: 0;
     background: linear-gradient(
-        45deg,
-        transparent 40%,
-        rgba(120, 255, 255, 0.03) 45%,
-        rgba(255, 120, 255, 0.03) 50%,
-        rgba(120, 120, 255, 0.03) 55%,
-        transparent 60%
+        165deg,
+        rgba(0, 232, 255, 0.07) 0%,
+        transparent 45%
     );
-    animation: prismEffect 8s linear infinite;
     pointer-events: none;
 }
 
-/* ガラスの質感 */
 .user-message::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 30%;
-    background: linear-gradient(
-        to bottom,
-        rgba(255, 255, 255, 0.03) 0%,
-        transparent 100%
-    );
-    border-radius: 20px 20px 0 0;
-    pointer-events: none;
+    display: none;
 }
 
-/* アシスタントメッセージ：サイバーネオンパネル */
+/* アシスタントメッセージ：同系トーン（左寄せ・尾を左下） */
 .assistant-message {
-    background: 
-        linear-gradient(135deg, 
-            rgba(10, 10, 15, 0.95) 0%,
-            rgba(15, 20, 30, 0.92) 25%, 
-            rgba(20, 30, 45, 0.95) 50%,
-            rgba(15, 20, 30, 0.92) 75%,
-            rgba(10, 10, 15, 0.95) 100%);
-    color: #e8f8ff;
+    background: var(--bmax-panel-deep);
+    color: #ffffff;
     padding: 14px 20px;
-    border-radius: 16px 16px 16px 4px;
+    border-radius: 18px 18px 18px 6px;
     margin-left: 10px;
     margin-right: auto;
-    border: 2px solid rgba(0, 212, 255, 0.5);
-    box-shadow: 
-        0 0 25px rgba(0, 212, 255, 0.4),
-        0 0 15px rgba(0, 255, 255, 0.3),
-        0 4px 20px rgba(77, 208, 225, 0.2),
-        inset 0 0 30px rgba(0, 212, 255, 0.08),
-        inset 0 1px 0 rgba(0, 255, 255, 0.3),
-        inset 0 -1px 0 rgba(0, 212, 255, 0.2);
+    border: 1px solid var(--bmax-border-cyan);
+    box-shadow:
+        0 0 20px var(--bmax-glow-cyan),
+        0 6px 22px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(0, 232, 255, 0.12);
     position: relative;
     overflow: hidden;
     font-weight: 450;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.03em;
     line-height: 1.7;
-    text-shadow: 0 0 8px rgba(0, 212, 255, 0.3),
-                 0 1px 3px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(10px);
+    text-shadow: none;
+    backdrop-filter: blur(12px);
 }
 
-/* ホログラフィックスキャンライン */
 .assistant-message::before {
     content: '';
     position: absolute;
-    top: -2px;
-    left: -2px;
-    right: -2px;
-    bottom: -2px;
+    inset: 0;
     background: linear-gradient(
-        90deg,
-        transparent 0%,
-        rgba(0, 255, 255, 0.1) 25%,
-        rgba(0, 212, 255, 0.2) 50%,
-        rgba(77, 208, 225, 0.15) 75%,
-        transparent 100%
+        135deg,
+        rgba(0, 232, 255, 0.07) 0%,
+        transparent 50%,
+        rgba(0, 160, 200, 0.05) 100%
     );
-    background-size: 200% 100%;
-    animation: hologramScan 4s linear infinite;
-    border-radius: 16px 16px 16px 4px;
     pointer-events: none;
     z-index: 1;
 }
 
-/* サイバーグロー上部 */
 .assistant-message::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 40%;
-    background: linear-gradient(
-        to bottom,
-        rgba(0, 212, 255, 0.15) 0%,
-        rgba(0, 255, 255, 0.08) 50%,
-        transparent 100%
-    );
-    border-radius: 16px 16px 0 0;
-    pointer-events: none;
-    z-index: 1;
+    display: none;
 }
 
-/* テキストを前面に */
 .assistant-message > * {
     position: relative;
     z-index: 2;
-}
-
-@keyframes hologramScan {
-    0% {
-        background-position: -200% 0;
-    }
-    100% {
-        background-position: 200% 0;
-    }
 }
 
 /* 入力エリア */
@@ -1116,37 +1060,66 @@ button:hover {
 }
 
 .suggestion-button {
-    background: linear-gradient(135deg,
-        rgba(90, 140, 168, 0.92),
-        rgba(74, 117, 145, 0.95));
-    border: 2px solid rgba(74, 117, 145, 0.6);
-    border-radius: 18px;
-    padding: 8px 16px;
-    font-size: 14px;
-    color: #fff;
+    background: var(--bmax-panel);
+    border: 1px solid var(--bmax-border-cyan);
+    border-radius: 999px;
+    padding: 10px 18px;
+    font-size: 13px;
+    color: #ffffff;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 
-        0 0 15px rgba(0, 212, 255, 0.4),
-        0 2px 8px rgba(0, 191, 255, 0.3),
-        inset 0 1px 0 rgba(0, 255, 255, 0.2);
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.2s ease;
+    box-shadow:
+        0 0 14px var(--bmax-glow-cyan),
+        0 4px 14px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
     backdrop-filter: blur(10px);
-    text-shadow: 0 0 8px rgba(0, 212, 255, 0.6);
+    text-shadow: none;
 }
 
 .suggestion-button:hover {
-    background: linear-gradient(135deg, 
-        rgba(74, 117, 145, 1) 0%, 
-        rgba(61, 90, 128, 1) 100%);
+    background: linear-gradient(135deg, rgba(45, 70, 95, 0.95), rgba(28, 45, 62, 0.92));
     color: #fff;
-    border-color: rgba(61, 90, 128, 0.9);
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 
-        0 4px 15px rgba(74, 117, 145, 0.4),
-        inset 0 1px 0 rgba(0, 255, 255, 0.4);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-shadow: 0 0 12px rgba(0, 255, 255, 0.9);
+    border-color: var(--bmax-neon-cyan);
+    transform: translateY(-1px);
+    box-shadow:
+        0 0 22px var(--bmax-glow-cyan),
+        0 6px 18px rgba(0, 0, 0, 0.4),
+        inset 0 1px 0 rgba(0, 232, 255, 0.15);
+}
+
+/* ナビ専用：自由入力＝マゼンタ系ネオン */
+.suggestion-button.suggestion-button--free-input {
+    background: rgba(45, 22, 40, 0.85);
+    border-color: rgba(255, 95, 200, 0.95);
+    box-shadow:
+        0 0 18px rgba(255, 95, 200, 0.45),
+        0 4px 14px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 180, 220, 0.12);
+}
+
+.suggestion-button.suggestion-button--free-input:hover {
+    border-color: #ff9fe0;
+    box-shadow:
+        0 0 26px rgba(255, 120, 210, 0.55),
+        0 6px 18px rgba(0, 0, 0, 0.4);
+}
+
+/* ナビ専用：主要項目へ戻る＝ヘッダー右側のエレクトリックブルー系 */
+.suggestion-button.suggestion-button--back-main {
+    background: rgba(18, 36, 68, 0.88);
+    border-color: rgba(100, 180, 255, 0.92);
+    box-shadow:
+        0 0 18px var(--bmax-glow-blue),
+        0 4px 14px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(180, 220, 255, 0.1);
+}
+
+.suggestion-button.suggestion-button--back-main:hover {
+    border-color: var(--bmax-neon-blue);
+    box-shadow:
+        0 0 26px rgba(100, 190, 255, 0.55),
+        0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
 /* 🆕 ユーザー属性選択ボタン（CERA版）（🔧 修正版） */
@@ -1510,11 +1483,10 @@ button:hover {
         padding: 10px 15px !important;
     }
     
-    /* サジェスチョンボタン */
+    /* サジェスチョンボタン（色はベース定義を継承、サイズのみ調整） */
     .suggestion-button {
         padding: 6px 12px !important;
         font-size: 13px !important;
-        background: linear-gradient(135deg, rgba(90, 140, 168, 0.92), rgba(74, 117, 145, 0.95)) !important;
     }
     
     /* コントロールボタン */
