@@ -2234,6 +2234,7 @@ def handle_message(data):
             user_type = DEFAULT_USER_TYPE
         language = session_info.get('language', 'ja')
         
+        suggestions = []
         try:
             from modules.static_qa_data import (
                 get_suggestions_for_phase,

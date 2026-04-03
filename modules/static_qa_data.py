@@ -351,7 +351,7 @@ def get_suggestions_for_phase(
     selected_norm = {_normalize(s) for s in selected}
 
     if language != "ja":
-    return []
+        return []
 
     last_selected = None
     for s in reversed(selected):
@@ -368,7 +368,7 @@ def get_suggestions_for_phase(
     main = [s for s in MAIN_SECTIONS_JA if _normalize(s) not in selected_norm]
     if not main:
         main = MAIN_SECTIONS_JA[:]
-    return main[:_MAX_MAIN_SUGGESTIONS]
+    return main[:_MAX_MAIN_SUGGESTIONS] + [FREE_INPUT_HINT_JA, BACK_TO_MAIN_JA]
 
 
 def get_response_for_user(
