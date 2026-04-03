@@ -503,7 +503,7 @@
     };
     
     /** アバター会話音声（TTS）の再生速度（1.0＝等速） */
-    const VOICE_PLAYBACK_RATE = 1.3;
+    const VOICE_PLAYBACK_RATE = 1.12;
     
     let audioState = {
         recorder: null,
@@ -1814,7 +1814,7 @@
         suggestionsContainer.className = 'message-suggestions';
         
         const SUGGESTION_FREE_INPUT = '自由入力で具体条件を書く';
-        const SUGGESTION_BACK_MAIN = '戻る（主要項目へ）';
+        const SUGGESTION_BACK_MAIN = '戻る（質問候補を表示）';
         
         suggestions.forEach((suggestion, index) => {
             const button = document.createElement('button');
@@ -1975,7 +1975,7 @@
                     convertBlobToBase64(audioBlob).then(base64data => {
                         socket.emit('audio_message', { 
                             audio: base64data,
-                            language: appState.currentLanguage,
+                            language: appState.currentLanguage || 'ja',
                             visitorId: visitorManager.visitorId,
                             conversationHistory: conversationMemory.getRecentContext(5),
                             visitData: visitorManager.visitData,

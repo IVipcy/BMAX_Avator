@@ -2,9 +2,8 @@
 import os
 import base64
 import tempfile
-import wave
-import io
 import subprocess
+from typing import Optional
 from openai import OpenAI
 
 # FFmpegのパスを確認
@@ -21,7 +20,9 @@ FFMPEG_AVAILABLE = find_ffmpeg()
 
 class SpeechProcessor:
     def __init__(self):
-        api_key = os.getenv("OPENAI_API_KEY")
+        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        if not api_key:
+            print("[WARNING] OPENAI_API_KEY が未設定です。音声認識は利用できません。")
         self.client = OpenAI(api_key=api_key) if api_key else OpenAI()
         self.supported_formats = ['webm', 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'ogg']
         self.ffmpeg_available = FFMPEG_AVAILABLE
@@ -35,10 +36,53 @@ class SpeechProcessor:
             return raw.strip()
         return (getattr(raw, "text", None) or str(raw)).strip()
 
+    def _normalize_language(self, language) -> Optional[str]:
+        """Whisper API 用 ISO-639-1（無効なら None＝自動判定）"""
+        if not language:
+            return None
+        if not isinstance(language, str):
+            language = str(language)
+        code = language.strip().lower()[:2]
+        if len(code) == 2 and code.isalpha():
+            return code
+        return None
+
+    def _call_whisper(self, path_for_whisper: str, lang_hint: Optional[str]) -> object:
+        """Whisper API を呼ぶ（失敗時は language なしで再試行）"""
+        prompt = (
+            "ミニ四駆、B-MAX GP、ストッククラス、タミヤ、レギュレーション、車検、"
+            "モーター、トルクチューン、ローラー、ギヤ、ブレーキ、マスダンパー"
+        )
+        fname = os.path.basename(path_for_whisper) or "recording.webm"
+
+        def _create(file_obj, use_lang: bool):
+            kw = {"model": "whisper-1", "file": (fname, file_obj), "prompt": prompt}
+            if use_lang and lang_hint:
+                kw["language"] = lang_hint
+            return self.client.audio.transcriptions.create(**kw)
+
+        try:
+            with open(path_for_whisper, "rb") as f:
+                return _create(f, True)
+        except Exception as first_err:
+            print(f"[WARNING] Whisper 1回目失敗 ({first_err}) — 再試行")
+            try:
+                with open(path_for_whisper, "rb") as f2:
+                    return _create(f2, False)
+            except Exception as e2:
+                print(f"[WARNING] (fname, file) 形式で失敗 ({e2}) — 生ファイルで再試行")
+                with open(path_for_whisper, "rb") as f3:
+                    kw = {"model": "whisper-1", "file": f3, "prompt": prompt}
+                    return self.client.audio.transcriptions.create(**kw)
+
     def transcribe_audio(self, audio_base64, language='ja'):
         """Base64エンコードされた音声データをテキストに変換"""
+        if not os.getenv("OPENAI_API_KEY", "").strip():
+            print("[ERROR] OPENAI_API_KEY 未設定のため音声認識できません")
+            return None
         try:
-            print(f"[INFO] 音声認識開始 (言語: {language})")
+            lang_hint = self._normalize_language(language)
+            print(f"[INFO] 音声認識開始 (言語ヒント: {lang_hint or 'auto'})")
             
             # Base64データの検証
             if not audio_base64:
@@ -94,15 +138,8 @@ class SpeechProcessor:
                 else:
                     print("[INFO] FFmpegなし — WebMを Whisper API に直接送信します")
 
-                with open(path_for_whisper, 'rb') as audio_file:
-                    print("[INFO] Whisper APIに送信中...")
-                    transcript = self.client.audio.transcriptions.create(
-                        model="whisper-1",
-                        file=audio_file,
-                        language=language,
-                        response_format="text",
-                        prompt="ミニ四駆、B-MAX GP、ストッククラス、タミヤ、レギュレーション、車検、モーター、トルクチューン、ローラー、ギヤ、ブレーキ、マスダンパー"
-                    )
+                print("[INFO] Whisper APIに送信中...")
+                transcript = self._call_whisper(path_for_whisper, lang_hint)
 
                 text = self._extract_transcript_text(transcript)
                 print(f"[OK] 音声認識成功: '{text}'")

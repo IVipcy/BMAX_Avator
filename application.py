@@ -1157,6 +1157,9 @@ def extract_emotion_tag(response_text):
     """
     import re
     
+    if response_text is None:
+        return "", "neutral"
+    
     # [EMOTION:xxx]パターンを検索
     match = re.search(r'\[EMOTION:(\w+)\]', response_text)
     
@@ -2073,7 +2076,7 @@ def handle_message(data):
             if visitor_id and visitor_id in visitor_data:
                 visitor_data[visitor_id]['selected_suggestions'] = []
             clear_selected_suggestions_flag = True
-            print("🔙 サジェスチョン: 主要項目へ戻る（選択履歴をクリア）")
+            print("🔙 サジェスチョン: 質問候補へ戻る（選択履歴をクリア）")
         elif selected_suggestions_from_client:
             # ✅ クライアントから送信された選択済みサジェスチョンをセッションに保存（順序を維持）
             session_info['selected_suggestions'] = list(selected_suggestions_from_client)
@@ -2232,7 +2235,13 @@ def handle_message(data):
         language = session_info.get('language', 'ja')
         
         try:
-            from modules.static_qa_data import get_suggestions_for_phase, get_current_phase
+            from modules.static_qa_data import (
+                get_suggestions_for_phase,
+                get_current_phase,
+                FREE_INPUT_HINT_JA,
+                BACK_TO_MAIN_JA,
+                _normalize,
+            )
             
             # 現在のPhaseを判定
             selected_count = session_info.get('selected_suggestions_count', 0)
@@ -2245,6 +2254,11 @@ def handle_message(data):
                 user_type,
                 language
             )
+            
+            # 自由入力ボタンを押した直後の応答では「戻る」のみ（他候補と混ざらないように）
+            if language == 'ja' and _normalize(message or '') == _normalize(FREE_INPUT_HINT_JA):
+                suggestions = [BACK_TO_MAIN_JA]
+                print("📋 自由入力直後: サジェスチョンは戻るのみ")
             
             print(f"📋 サジェスチョン生成: Phase={current_phase}, UserType={user_type}, Count={len(suggestions)}")
             

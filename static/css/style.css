@@ -1171,7 +1171,7 @@ button:hover {
         0 6px 18px rgba(0, 0, 0, 0.4);
 }
 
-/* ナビ専用：主要項目へ戻る＝アンバー／ゴールド系（自由入力マゼンタと差別化） */
+/* ナビ専用：戻る（質問候補を表示）＝アンバー／ゴールド系（自由入力マゼンタと差別化） */
 .suggestion-button.suggestion-button--back-main {
     background: rgba(42, 32, 14, 0.9);
     border-color: rgba(255, 190, 90, 0.95);
@@ -1279,6 +1279,46 @@ button:hover {
         height: 60px !important;
         z-index: 1000 !important;
         background-position: right center !important;
+    }
+    
+    /* タイトル：1行に収める（語の途中改行を防ぐ） */
+    .header-content {
+        padding: 8px 8px 8px 12px !important;
+        gap: 6px !important;
+    }
+    
+    .title-container {
+        min-width: 0 !important;
+        flex: 1 1 0% !important;
+    }
+    
+    .fixed-controls {
+        flex-shrink: 0 !important;
+    }
+    
+    .main-title {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        align-items: baseline !important;
+        gap: 5px !important;
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        overflow-y: hidden !important;
+        -webkit-overflow-scrolling: touch !important;
+        scrollbar-width: none !important;
+        font-size: inherit !important;
+    }
+    
+    .main-title::-webkit-scrollbar {
+        display: none !important;
+        height: 0 !important;
+    }
+    
+    .main-title .title-kyo,
+    .main-title .title-yuzen,
+    .main-title .title-name {
+        white-space: nowrap !important;
+        flex-shrink: 0 !important;
     }
     
     /* メインラッパー：全画面 */
@@ -1585,14 +1625,13 @@ button:hover {
         font-size: 12px !important;
     }
     
-    /* タイトル調整 */
-    .main-title {
-        font-size: 18px !important;
+    /* タイトル：折り返し禁止のまま読めるサイズ */
+    .title-kyo {
+        font-size: 15px !important;
     }
     
-    .title-kyo,
     .title-yuzen {
-        font-size: 20px !important;
+        font-size: 12px !important;
     }
     
     .title-subtitle {
@@ -1600,7 +1639,7 @@ button:hover {
     }
     
     .title-name {
-        font-size: 16px !important;
+        font-size: 14px !important;
     }
 }
 
@@ -1622,13 +1661,20 @@ button:hover {
         display: none !important;
     }
     
-    .title-kyo,
+    .title-kyo {
+        font-size: 12px !important;
+    }
+    
     .title-yuzen {
-        font-size: 16px !important;
+        font-size: 10px !important;
     }
     
     .title-name {
-        font-size: 14px !important;
+        font-size: 12px !important;
+    }
+    
+    .main-title {
+        gap: 3px !important;
     }
     
     /* コントロールボタンをさらに小さく */

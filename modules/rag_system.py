@@ -109,8 +109,9 @@ class RAGSystem:
             persist_directory = os.getenv('CHROMA_DB_PATH', 'data/chroma_db')
         self.persist_directory = persist_directory
         
-        self.embeddings = OpenAIEmbeddings()
-        self.openai_client = OpenAI()
+        _key = os.getenv("OPENAI_API_KEY", "").strip()
+        self.embeddings = OpenAIEmbeddings(openai_api_key=_key) if _key else OpenAIEmbeddings()
+        self.openai_client = OpenAI(api_key=_key) if _key else OpenAI()
         
         # 🔧 DBインスタンスを明示的に初期化
         self.db = None
@@ -999,6 +1000,41 @@ class RAGSystem:
         
         return unique_suggestions if unique_suggestions else lang_suggestions.get('default', ['もっと教えて'])[:3]
     
+    def _minimal_openai_reply(self, question: str, language: str = 'ja') -> Optional[str]:
+        """フルRAGパイプラインが例外終了したときの短いチャットのみ（APIキー必須）"""
+        if not question or not os.getenv("OPENAI_API_KEY", "").strip():
+            return None
+        try:
+            sys_ja = (
+                "あなたはミニ四駆大会の主催Mr.永見。レギュレーション案内を担当する。"
+                "簡潔に日本語で答え。最後に必ず [EMOTION:neutral] か [EMOTION:happy] など感情タグを一つ付ける。"
+            )
+            sys_en = (
+                "You are Mr. Nagami, Mini 4WD race host. Answer briefly in English. "
+                "End with one tag like [EMOTION:neutral]."
+            )
+            if language == 'en':
+                messages = [
+                    {"role": "system", "content": sys_en},
+                    {"role": "user", "content": question[:6000]},
+                ]
+            else:
+                messages = [
+                    {"role": "system", "content": sys_ja},
+                    {"role": "user", "content": question[:6000]},
+                ]
+            r = self.openai_client.chat.completions.create(
+                model="gpt-4o-mini",
+                messages=messages,
+                max_tokens=400,
+                temperature=0.7,
+            )
+            t = (r.choices[0].message.content or "").strip()
+            return t if t else None
+        except Exception as ex:
+            print(f"⚠️ _minimal_openai_reply 失敗: {ex}")
+            return None
+    
     def get_response(self, question, language='ja', conversation_history=None):
         """質問に対する応答を生成(感情履歴・関係性対応版)"""
         
@@ -1042,6 +1078,15 @@ class RAGSystem:
                     return "[Emotion:neutral] 申し訳ございません。知識データベースへのアクセスに少し問題が発生しています。ページを更新するか、しばらく待ってからもう一度お試しください。ご不便をおかけして申し訳ありません！"
         
         try:
+            search_context = ""
+            knowledge_context = ""
+            
+            if not os.getenv("OPENAI_API_KEY", "").strip():
+                return (
+                    "【設定】OpenAI API キーがサーバーにありません。"
+                    "管理者は環境変数 OPENAI_API_KEY を設定してください。[EMOTION:neutral]"
+                )
+            
             # データが読み込まれていない場合は再読み込み
             if not hasattr(self, 'character_settings'):
                 self._load_all_knowledge()
@@ -1226,6 +1271,9 @@ Examples:
                     raise api_err
             
             answer = response.choices[0].message.content
+            if answer is None:
+                answer = ""
+            answer = str(answer).strip()
             
             # 🔧 最終的なテキストクリーンアップ（音声生成前の保険）
             answer = self._final_text_cleanup(answer)
@@ -1276,22 +1324,23 @@ Examples:
             print(f"応答生成エラー: {e}")
             import traceback
             traceback.print_exc()
-            # 参照コンテキストがあれば LLM なしで最低限返す
-            try:
-                sc = locals().get("search_context") or ""
-                if sc.strip():
-                    if language == 'en':
-                        return (
-                            "Here's what I found in the regulations (auto excerpt): "
-                            f"{sc[:800]} [EMOTION:neutral]"
-                        )
+            sc = (locals().get("search_context") or "").strip()
+            kc = (locals().get("knowledge_context") or "").strip()
+            combined = "\n\n".join(x for x in (sc, kc) if x).strip()
+            if combined:
+                if language == 'en':
                     return (
-                        "資料から該当箇所を引用します。\n\n"
-                        f"{sc[:800]}\n\n"
-                        "※自動引用のため、大会当日は主催者の説明を優先してください。[EMOTION:neutral]"
+                        "Here's what I found in the regulations (auto excerpt): "
+                        f"{combined[:1200]} [EMOTION:neutral]"
                     )
-            except Exception:
-                pass
+                return (
+                    "資料から該当箇所を引用します。\n\n"
+                    f"{combined[:1200]}\n\n"
+                    "※自動引用のため、大会当日は主催者の説明を優先してください。[EMOTION:neutral]"
+                )
+            mini = self._minimal_openai_reply(question, language)
+            if mini:
+                return mini
             if language == 'en':
                 return "Sorry, I'm having trouble generating a response right now."
             return "申し訳ありません。応答の生成中にエラーが発生しました。"

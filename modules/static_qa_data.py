@@ -40,7 +40,7 @@ RESOLUTION_CHOICES_JA: List[str] = [
     "いいえ（追加で聞きたい）",
 ]
 
-BACK_TO_MAIN_JA = "戻る（主要項目へ）"
+BACK_TO_MAIN_JA = "戻る（質問候補を表示）"
 FREE_INPUT_HINT_JA = "自由入力で具体条件を書く"
 
 # ==========================================================
@@ -351,7 +351,7 @@ def get_suggestions_for_phase(
     selected_norm = {_normalize(s) for s in selected}
 
     if language != "ja":
-        return []
+    return []
 
     last_selected = None
     for s in reversed(selected):
@@ -385,7 +385,7 @@ def get_response_for_user(
         current_phase = phase
     if not message:
         return None
-
+    
     if language != "ja":
         return None
 
@@ -408,7 +408,7 @@ def get_response_for_user(
     hit = _try_keyword_static_response(msg_norm)
     if hit:
         return hit
-
+    
     return None
 
 
