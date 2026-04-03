@@ -374,8 +374,8 @@ class RAGSystem:
                 "metadata": {"source": "knowledge.txt", "category": "案内", "topic": "問い合わせ"}
             },
             {
-                "text": "私はMr.永見。ミニ四駆大会の主催・運営担当です。レギュレーションを端的に案内します。",
-                "metadata": {"source": "personality.txt", "category": "キャラクター", "topic": "Mr.永見"}
+                "text": "私は永見実行委員長。ミニ四駆大会の主催・運営担当です。レギュレーションを端的に案内します。",
+                "metadata": {"source": "personality.txt", "category": "キャラクター", "topic": "永見実行委員長"}
             },
             {
                 "text": "ボディはタミヤ製ボディキャッチで前後固定が必須で、走行中の脱落は失格です。",
@@ -815,8 +815,8 @@ class RAGSystem:
         return 'neutral'
     
     def get_character_prompt(self):
-        """キャラクター設定プロンプトを生成（Mr.永見版）"""
-        prompt = """あなたはMr.永見です。
+        """キャラクター設定プロンプトを生成（永見実行委員長版）"""
+        prompt = """あなたは永見実行委員長です。
 
 【基本設定】
 - 京セラのイノベーション推進室の社員（設定）
@@ -1006,11 +1006,11 @@ class RAGSystem:
             return None
         try:
             sys_ja = (
-                "あなたはミニ四駆大会の主催Mr.永見。レギュレーション案内を担当する。"
+                "あなたはミニ四駆大会の主催・永見実行委員長。レギュレーション案内を担当する。"
                 "簡潔に日本語で答え。最後に必ず [EMOTION:neutral] か [EMOTION:happy] など感情タグを一つ付ける。"
             )
             sys_en = (
-                "You are Mr. Nagami, Mini 4WD race host. Answer briefly in English. "
+                "You are Chairman Nagami, Mini 4WD race organizer. Answer briefly in English. "
                 "End with one tag like [EMOTION:neutral]."
             )
             if language == 'en':
@@ -1146,7 +1146,7 @@ class RAGSystem:
             # 🎯 【修正③】言語に応じたシステムプロンプトの調整(文字数制限を明記、文章の自然な完結を優先)
             if language == 'en':
                 print(f"[DEBUG] Using English system prompt")
-                base_personality = f"""You are Mr. Nagami, the event organizer and regulation guide for a Mini 4WD race.
+                base_personality = f"""You are Chairman Nagami, the event organizer and regulation guide for a Mini 4WD race.
 
 CRITICAL INSTRUCTIONS:
 - You MUST respond ONLY in English. This is MANDATORY.
@@ -1167,12 +1167,12 @@ Current emotion: {next_emotion}
 - Reflect this emotion naturally in your response
 """
                 
-                # 🆕 英語版の感情タグ指示（Mr.永見版）
+                # 🆕 英語版の感情タグ指示（永見実行委員長版）
                 emotion_instruction = """
 CRITICAL - EMOTION TAG REQUIRED:
 You MUST add an emotion tag at the end of every response.
 
-You are Mr. Nagami. Use emotion tags mainly as:
+You are Chairman Nagami. Use emotion tags mainly as:
 - [EMOTION:neutral] for rule explanations
 - [EMOTION:happy] when the user understands / resolves
 - [EMOTION:sad] when constraints are strict
@@ -1205,12 +1205,12 @@ Examples:
 - 要点を簡潔にまとめつつも、不自然な場所で切らないこと
 """
                 
-                # 🆕 感情タグの指示を追加（Mr.永見版）
+                # 🆕 感情タグの指示を追加（永見実行委員長版）
                 emotion_instruction = """
 【重要:感情タグ - 必須】
 応答の最後に必ず感情タグを付けてください。これは必須です。
 
-あなたは大会主催のMr.永見として回答します。基本はルール説明なので [EMOTION:neutral] を中心に使ってください。
+あなたは大会主催の永見実行委員長として回答します。基本はルール説明なので [EMOTION:neutral] を中心に使ってください。
 
 感情の選択基準：
 - ルール説明（OK/NG/条件） → [EMOTION:neutral]

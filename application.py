@@ -47,7 +47,7 @@ socketio = SocketIO(
     async_mode='threading'  # Python 3.13対応
 )
 
-# ====== アバター設定（Mr.永見用） ======
+# ====== アバター設定（永見実行委員長用） ======
 ENABLE_USER_TYPE_SELECTION = False  # True: CERA用（属性選択あり）, False: Futaba用（属性選択なし）
 DEFAULT_USER_TYPE = 'default'  # 属性選択無効時のデフォルト値
 
@@ -750,10 +750,10 @@ def calculate_relationship_level(conversation_count):
         return {'level': 4, 'style': 'best_friend', 'name': 'MAX'}
 
 def get_relationship_adjusted_greeting(language, relationship_style):
-    """関係性レベルに応じた挨拶を生成（Mr.永見版）"""
+    """関係性レベルに応じた挨拶を生成（永見実行委員長版）"""
     greetings = {
         'ja': {
-            'formal': "こんにちは。主催のMr.永見です。大会レギュ（ルール）を分かりやすく案内します。まず、どの項目が知りたいですか？",
+            'formal': "こんにちは。実行委員長の永見です。大会レギュ（ルール）を分かりやすく案内します。まず、どの項目が知りたいですか？",
             'polite': "おかえりなさい。ルールの確認ですね。どの項目からいきますか？",
             'friendly': "こんにちは。今日もレギュの確認いきましょう。どこが気になりますか？",
             'casual': "こんにちは。ルール、どこから確認しますか？"
@@ -1031,7 +1031,7 @@ def adjust_response_style(response, language='ja', relationship_style='formal'):
     import re
     
     if language == 'ja':
-        # Mr.永見: 口調は常に「です・ます」に統一（relationship_style による崩しを無効化）
+        # 永見実行委員長: 口調は常に「です・ます」に統一（relationship_style による崩しを無効化）
         # relationship_style 自体は残すが、ここでは文体を変えない。
         pass
     elif language == 'en':
@@ -1687,8 +1687,8 @@ def handle_connect():
         # 初回接続の場合
         if session_data[session_id]['first_interaction']:
             try:
-                # 🆕 Mr.永見: 自己紹介メッセージ（簡潔版）
-                intro_message = "こんにちは。Mr.永見 です。大会レギュの質問にその場で答えます！気になる項目を選んでください。"
+                # 🆕 永見実行委員長: 自己紹介メッセージ（簡潔版）
+                intro_message = "こんにちは。実行委員長の永見です。大会レギュの質問にその場で答えます！気になる項目を選んでください。"
                 intro_emotion = 'start'  # Startモーション使用
                 
                 # 感情を検証
@@ -2596,7 +2596,7 @@ def handle_submit_survey(data):
     
     # スプレッドシートに保存
     survey_data = {
-        'avatar_name': os.getenv('AVATAR_NAME', 'Mr.永見'),  # アバター名（スプレッドシート識別用）
+        'avatar_name': os.getenv('AVATAR_NAME', '永見実行委員長'),  # アバター名（スプレッドシート識別用）
         'visitor_id': visitor_id,
         'quiz_score': quiz_score,
         'conversation_count': session_info.get('interaction_count', 0),

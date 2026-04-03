@@ -1806,75 +1806,86 @@
         if (!suggestions || suggestions.length === 0) return;
         
         // 既存のサジェスチョンを削除
-        const existingSuggestions = document.querySelectorAll('.message-suggestions');
-        existingSuggestions.forEach(elem => elem.remove());
-        
-        // サジェスチョンコンテナを作成
-        const suggestionsContainer = document.createElement('div');
-        suggestionsContainer.className = 'message-suggestions';
+        document.querySelectorAll('.suggestions-wrapper, .message-suggestions').forEach(elem => elem.remove());
         
         const SUGGESTION_FREE_INPUT = '自由入力で具体条件を書く';
         const SUGGESTION_BACK_MAIN = '戻る（質問候補を表示）';
         
-        suggestions.forEach((suggestion, index) => {
-            const button = document.createElement('button');
-            button.className = 'suggestion-button';
-            if (suggestion === SUGGESTION_FREE_INPUT) {
-                button.classList.add('suggestion-button--nav', 'suggestion-button--free-input');
-            } else if (suggestion === SUGGESTION_BACK_MAIN) {
-                button.classList.add('suggestion-button--nav', 'suggestion-button--back-main');
+        const regularItems = [];
+        const navItems = [];
+        
+        suggestions.forEach((suggestion) => {
+            if (suggestion === SUGGESTION_FREE_INPUT || suggestion === SUGGESTION_BACK_MAIN) {
+                navItems.push(suggestion);
+            } else {
+                regularItems.push(suggestion);
             }
-            button.textContent = suggestion;
-            button.style.animationDelay = `${index * 0.1}s`;
-            
-            button.addEventListener('click', () => {
-                handleSuggestionClick(suggestion);
-            });
-            
-            suggestionsContainer.appendChild(button);
         });
         
-        // 🎯 新規追加: クイズを断った場合は「クイズに挑戦する」ボタンも表示
+        // ラッパーを作成（通常候補＋ナビをまとめる）
+        const wrapper = document.createElement('div');
+        wrapper.className = 'suggestions-wrapper';
+        
+        // スクロール可能なグリッドコンテナ（通常候補のみ）
+        if (regularItems.length > 0) {
+            const grid = document.createElement('div');
+            grid.className = 'suggestions-grid';
+            regularItems.forEach((suggestion, index) => {
+                const button = document.createElement('button');
+                button.className = 'suggestion-button';
+                button.textContent = suggestion;
+                button.style.animationDelay = `${index * 0.06}s`;
+                button.addEventListener('click', () => handleSuggestionClick(suggestion));
+                grid.appendChild(button);
+            });
+            wrapper.appendChild(grid);
+        }
+        
+        // ナビボタン（常に下部に固定表示）
+        if (navItems.length > 0) {
+            const nav = document.createElement('div');
+            nav.className = 'suggestions-nav';
+            navItems.forEach((suggestion) => {
+                const button = document.createElement('button');
+                button.className = 'suggestion-button';
+                if (suggestion === SUGGESTION_FREE_INPUT) {
+                    button.classList.add('suggestion-button--nav', 'suggestion-button--free-input');
+                } else if (suggestion === SUGGESTION_BACK_MAIN) {
+                    button.classList.add('suggestion-button--nav', 'suggestion-button--back-main');
+                }
+                button.textContent = suggestion;
+                button.addEventListener('click', () => handleSuggestionClick(suggestion));
+                nav.appendChild(button);
+            });
+            wrapper.appendChild(nav);
+        }
+        
+        // クイズボタン
         if (quizState.quizDeclined && !quizState.hasCompletedQuiz && !quizState.isActive) {
             const isJapanese = appState.currentLanguage === 'ja';
             const quizButton = document.createElement('button');
             quizButton.className = 'suggestion-button quiz-challenge-button';
             quizButton.textContent = isJapanese ? '🎯 クイズに挑戦する' : '🎯 Challenge Quiz';
-            quizButton.style.animationDelay = `${suggestions.length * 0.1}s`;
+            quizButton.style.animationDelay = `${suggestions.length * 0.06}s`;
             quizButton.style.background = 'linear-gradient(135deg, #FFB6C1, #FF69B4)';
             quizButton.style.fontWeight = '600';
-            
             quizButton.addEventListener('click', () => {
-                quizState.quizDeclined = false;  // フラグをリセット
+                quizState.quizDeclined = false;
                 startQuiz();
             });
-            
-            suggestionsContainer.appendChild(quizButton);
+            (wrapper.querySelector('.suggestions-nav') || wrapper).appendChild(quizButton);
         }
         
         // 配置場所を決定
-        if (targetMessageWrapper) {
-            // 特定のメッセージの直後に配置
-            targetMessageWrapper.appendChild(suggestionsContainer);
-        } else {
-            // 最新のアシスタントメッセージの直後に配置
-            const allAssistantMessages = domElements.chatMessages.querySelectorAll('.assistant-wrapper');
-            if (allAssistantMessages.length > 0) {
-                const lastAssistantMessage = allAssistantMessages[allAssistantMessages.length - 1];
-                lastAssistantMessage.appendChild(suggestionsContainer);
-            } else {
-                // フォールバック:チャットエリアに追加
-                domElements.chatMessages.appendChild(suggestionsContainer);
-            }
-        }
+        const target = targetMessageWrapper
+            || (() => {
+                const msgs = domElements.chatMessages.querySelectorAll('.assistant-wrapper');
+                return msgs.length > 0 ? msgs[msgs.length - 1] : domElements.chatMessages;
+            })();
+        target.appendChild(wrapper);
         
         // アニメーション
-        setTimeout(() => {
-            suggestionsContainer.classList.add('fade-in');
-        }, 100);
-        
-        // 🔧 修正: 30秒自動削除を廃止（京セラではサジェスチョンを永続的に表示）
-        // ユーザーがクリックするか、新しいサジェスチョンが表示されるまで残り続ける
+        setTimeout(() => wrapper.classList.add('fade-in'), 100);
     }
     
     // ====== サジェスチョンクリック処理(修正版) ======
@@ -1889,7 +1900,7 @@
         }
         
         // クリックされたサジェスチョンを非表示にする
-        const allSuggestions = document.querySelectorAll('.message-suggestions');
+        const allSuggestions = document.querySelectorAll('.suggestions-wrapper, .message-suggestions');
         allSuggestions.forEach(container => {
             container.classList.add('fade-out');
             setTimeout(() => {
