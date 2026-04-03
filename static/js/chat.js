@@ -502,6 +502,9 @@
         quizScore: 0
     };
     
+    /** アバター会話音声（TTS）の再生速度（1.0＝等速） */
+    const VOICE_PLAYBACK_RATE = 1.3;
+    
     let audioState = {
         recorder: null,
         chunks: [],
@@ -2258,17 +2261,19 @@
             audioData : `data:audio/mp3;base64,${audioData}`;
         const audio = new Audio(audioSrc);
         audio.muted = audioState.isMuted;
+        audio.playbackRate = VOICE_PLAYBACK_RATE;
         
         unityState.activeAudioElement = audio;
         conversationState.audioElement = audio;
         
-        // 🔧 修正: 音声長を動的に推定して最大再生時間を設定
+        // 🔧 修正: 音声長を動的に推定して最大再生時間を設定（再生速度に応じた壁時計時間）
         const estimatedDuration = estimateAudioDuration(audioData);
+        const wallClockSec = estimatedDuration / VOICE_PLAYBACK_RATE;
         const maxPlayTime = Math.max(
-            estimatedDuration * 1000 + 5000,  // 推定時間 + 5秒バッファ
+            wallClockSec * 1000 + 5000,  // 推定の実再生時間 + 5秒バッファ
             60000  // 最低60秒を保証
         );
-        console.log(`🎵 最大再生時間: ${maxPlayTime / 1000}秒 (推定: ${estimatedDuration.toFixed(1)}秒)`);
+        console.log(`🎵 最大再生時間: ${maxPlayTime / 1000}秒 (推定元: ${estimatedDuration.toFixed(1)}秒, ${VOICE_PLAYBACK_RATE}x速)`);
         
         let playbackTimer = null;
         let hasEnded = false;
@@ -3208,8 +3213,9 @@
         let delayTime = 3000;  // デフォルト3秒
         if (data.audio) {
             const audioDuration = estimateAudioDuration(data.audio);
-            // 音声長 + 余裕時間（2秒）をミリ秒に変換
-            delayTime = Math.max(3000, (audioDuration + 2) * 1000);
+            const wallSec = audioDuration / VOICE_PLAYBACK_RATE;
+            // 実再生時間 + 余裕（2秒）— 再生速度と整合
+            delayTime = Math.max(3000, (wallSec + 2) * 1000);
             console.log(`⏱️ 次の処理まで ${(delayTime / 1000).toFixed(1)}秒待ちます`);
         }
         

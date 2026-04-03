@@ -1393,7 +1393,7 @@ button:hover {
         border-radius: 0 !important;
     }
     
-    /* チャットセクション（モバイル版）- 完全透明化 */
+    /* チャットセクション（モバイル版）- 下から広めに（キャラのみぞおち付近まで） */
     .chat-section {
         position: fixed !important;
         bottom: 0 !important;
@@ -1403,7 +1403,7 @@ button:hover {
         width: 100% !important;
         max-width: 100% !important;
         height: auto !important;
-        max-height: 45vh !important;
+        max-height: 58vh !important;
         z-index: 100 !important;
         pointer-events: auto !important;
     }
@@ -1417,7 +1417,7 @@ button:hover {
         box-shadow: none !important;
         display: flex !important;
         flex-direction: column !important;
-        max-height: 45vh !important;
+        max-height: 58vh !important;
         pointer-events: auto !important;
     }
     
@@ -1429,8 +1429,8 @@ button:hover {
         padding: 15px !important;
         padding-bottom: 10px !important;
         background: transparent !important;
-        max-height: calc(45vh - 70px) !important;
-        min-height: 150px !important;
+        max-height: calc(58vh - 70px) !important;
+        min-height: 180px !important;
         -webkit-overflow-scrolling: touch !important;
         scrollbar-width: thin !important;
         scrollbar-color: rgba(212, 175, 55, 0.5) transparent !important;
@@ -1709,19 +1709,19 @@ button:hover {
         padding: 1px 6px !important;
     }
     
-    /* チャットエリアの高さ調整 */
+    /* チャットエリア（狭い画面でも縦に確保・みぞおち付近まで） */
     .chat-section {
-        max-height: 40vh !important;
+        max-height: 54vh !important;
     }
     
-    /* チャットコンテナは完全透明のまま */
     .chat-container {
         background: transparent !important;
+        max-height: 54vh !important;
     }
     
     .chat-messages {
-        max-height: calc(40vh - 60px) !important;
-        min-height: 100px !important;
+        max-height: calc(54vh - 60px) !important;
+        min-height: 140px !important;
         padding: 10px !important;
     }
     
