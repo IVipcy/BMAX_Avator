@@ -1084,7 +1084,11 @@ class RAGSystem:
             response_patterns = self.get_response_pattern(emotion=next_emotion)
             
             # さらに質問に直接関連する情報を検索
-            search_results = self.db.similarity_search(question, k=3)
+            try:
+                search_results = self.db.similarity_search(question, k=3)
+            except Exception as se:
+                print(f"❌ similarity_search エラー: {se}")
+                search_results = []
             # 検索結果を短縮(各結果の最初の150文字まで)
             search_context_parts = []
             for doc in search_results:
@@ -1200,13 +1204,26 @@ Examples:
             
             messages.append({"role": "user", "content": user_message})
             
+            chat_model = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini")
             # 🎯 【修正④】OpenAI APIでmax_tokensを調整(文章の自然な完結を優先)
-            response = self.openai_client.chat.completions.create(
-                model="gpt-4",
-                messages=messages,
-                max_tokens=150,  # 🔧 100 → 150に変更(日本語約250~300文字相当、英語約60語)
-                temperature=0.7
-            )
+            try:
+                response = self.openai_client.chat.completions.create(
+                    model=chat_model,
+                    messages=messages,
+                    max_tokens=150,  # 🔧 100 → 150に変更(日本語約250~300文字相当、英語約60語)
+                    temperature=0.7
+                )
+            except Exception as api_err:
+                if chat_model != "gpt-4o-mini":
+                    print(f"⚠️ チャットモデル失敗 ({chat_model}): {api_err} — gpt-4o-mini で再試行")
+                    response = self.openai_client.chat.completions.create(
+                        model="gpt-4o-mini",
+                        messages=messages,
+                        max_tokens=150,
+                        temperature=0.7
+                    )
+                else:
+                    raise api_err
             
             answer = response.choices[0].message.content
             
@@ -1259,11 +1276,25 @@ Examples:
             print(f"応答生成エラー: {e}")
             import traceback
             traceback.print_exc()
-            # 🎯 修正:言語に応じたエラーメッセージ
+            # 参照コンテキストがあれば LLM なしで最低限返す
+            try:
+                sc = locals().get("search_context") or ""
+                if sc.strip():
+                    if language == 'en':
+                        return (
+                            "Here's what I found in the regulations (auto excerpt): "
+                            f"{sc[:800]} [EMOTION:neutral]"
+                        )
+                    return (
+                        "資料から該当箇所を引用します。\n\n"
+                        f"{sc[:800]}\n\n"
+                        "※自動引用のため、大会当日は主催者の説明を優先してください。[EMOTION:neutral]"
+                    )
+            except Exception:
+                pass
             if language == 'en':
                 return "Sorry, I'm having trouble generating a response right now."
-            else:
-                return "申し訳ありません。応答の生成中にエラーが発生しました。"
+            return "申し訳ありません。応答の生成中にエラーが発生しました。"
     
     def _final_text_cleanup(self, text):
         """最終的なテキストクリーンアップ（音声生成前の保険）

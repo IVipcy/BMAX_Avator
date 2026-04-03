@@ -1980,6 +1980,12 @@ def handle_audio_message(data):
         
         # 音声→テキスト変換
         try:
+            if speech_processor is None:
+                print("❌ SpeechProcessor が未初期化です")
+                emit('error', {
+                    'message': '音声認識を初期化できませんでした。OPENAI_API_KEY とサーバー環境を確認してください。' if language == 'ja' else 'Speech recognition is not available. Check server configuration.'
+                })
+                return
             print("🔄 音声認識開始...")
             text = speech_processor.transcribe_audio(audio_base64, language)
             

@@ -645,6 +645,7 @@
             sendButton: document.getElementById('send-button'),
             voiceButton: document.getElementById('voice-button'),
             muteButton: document.getElementById('mute-button'),
+            muteControlLabel: document.getElementById('mute-control-label'),
             languageButton: document.getElementById('change-language-btn'),
             languageDisplay: document.getElementById('current-language'),
             changeLanguageBtn: document.getElementById('change-language-btn'),
@@ -1106,7 +1107,7 @@
             const savedMuteState = localStorage.getItem('audio_muted');
             if (savedMuteState !== null) {
                 audioState.isMuted = savedMuteState === 'true';
-                console.log(`🔊 ミュート状態を復元: ${audioState.isMuted ? 'ON' : 'OFF'}`);
+                console.log(`🔊 ミュート状態を復元: ${audioState.isMuted ? 'ミュート中(OFF表示)' : '音声あり(ON表示)'}`);
             }
         } catch (e) {
             console.warn('ミュート状態の復元に失敗:', e);
@@ -1145,12 +1146,19 @@
             
             if (audioState.isMuted) {
                 domElements.muteButton.innerHTML = '🔇';
-                domElements.muteButton.title = isJapanese ? 'ミュート解除' : 'Unmute';
+                domElements.muteButton.title = isJapanese ? 'タップで音声オン（再生）' : 'Unmute';
                 domElements.muteButton.classList.add('muted');
             } else {
                 domElements.muteButton.innerHTML = '🔊';
-                domElements.muteButton.title = isJapanese ? 'ミュート' : 'Mute';
+                domElements.muteButton.title = isJapanese ? 'タップで音声オフ（ミュート）' : 'Mute';
                 domElements.muteButton.classList.remove('muted');
+            }
+            
+            // 音声マークの下：ON＝再生あり / OFF＝ミュート中
+            if (domElements.muteControlLabel) {
+                domElements.muteControlLabel.textContent = audioState.isMuted ? 'OFF' : 'ON';
+                domElements.muteControlLabel.classList.toggle('mute-status-off', audioState.isMuted);
+                domElements.muteControlLabel.classList.toggle('mute-status-on', !audioState.isMuted);
             }
         }
     }
@@ -1945,12 +1953,12 @@
     }
     
     function startVoiceRecording() {
-        appState.isWaitingResponse = true;
         updateConnectionStatus('recording');
         playSystemSound('start');
         
         navigator.mediaDevices.getUserMedia({ audio: true })
             .then(function(stream) {
+                appState.isWaitingResponse = true;
                 audioState.recorder = new MediaRecorder(stream);
                 audioState.chunks = [];
                 
@@ -1990,6 +1998,7 @@
                 console.error('マイクの使用が許可されていません:', err);
                 showError('マイクの使用が許可されていません');
                 audioState.isRecording = false;
+                appState.isWaitingResponse = false;
                 updateConnectionStatus('connected');
             });
     }
@@ -2825,6 +2834,7 @@
     
     function handleErrorMessage(data) {
         console.error('エラー:', data.message);
+        appState.isWaitingResponse = false;
         showError(data.message || '不明なエラーが発生しました');
         updateConnectionStatus('error');
         sendEmotionToAvatar('neutral', false, 'emergency');

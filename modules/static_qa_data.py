@@ -399,7 +399,7 @@ def get_response_for_user(
         return "承知しました。次に確認する項目を選んでください。[EMOTION:neutral]"
 
     if msg_norm == _normalize(FREE_INPUT_HINT_JA):
-        return "承知しました。パーツ名（商品名でも可）と、加工内容を具体的に入力してください。[EMOTION:neutraltalking]"
+        return "承知しました。具体的な質問内容を入力してください。[EMOTION:neutraltalking]"
 
     for m in MAIN_SECTIONS_JA:
         if _normalize(m) == msg_norm:

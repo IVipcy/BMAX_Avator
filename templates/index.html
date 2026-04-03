@@ -26,9 +26,12 @@
             
             <!-- 固定コントロールボタン -->
             <div class="fixed-controls">
-                <button id="mute-button" class="control-button mute-button" title="音声のオン/オフ">
-                    🔊
-                </button>
+                <div class="mute-control-wrap">
+                    <button id="mute-button" class="control-button mute-button" type="button" title="音声のオン/オフ" aria-label="音声のオンとオフを切り替え">
+                        🔊
+                    </button>
+                    <span id="mute-control-label" class="mute-control-label mute-status-on" aria-hidden="true">ON</span>
+                </div>
             </div>
         </div>
     </header>

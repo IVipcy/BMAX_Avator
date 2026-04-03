@@ -21,18 +21,22 @@ FFMPEG_AVAILABLE = find_ffmpeg()
 
 class SpeechProcessor:
     def __init__(self):
-        self.client = OpenAI()
+        api_key = os.getenv("OPENAI_API_KEY")
+        self.client = OpenAI(api_key=api_key) if api_key else OpenAI()
         self.supported_formats = ['webm', 'mp3', 'mp4', 'mpeg', 'mpga', 'm4a', 'wav', 'ogg']
         self.ffmpeg_available = FFMPEG_AVAILABLE
         print(f"[INFO] SpeechProcessor初期化完了 (FFmpeg利用可能: {self.ffmpeg_available})")
     
+    def _extract_transcript_text(self, raw):
+        """Whisper API の戻り値（str またはオブジェクト）からテキストを取得"""
+        if raw is None:
+            return ""
+        if isinstance(raw, str):
+            return raw.strip()
+        return (getattr(raw, "text", None) or str(raw)).strip()
+
     def transcribe_audio(self, audio_base64, language='ja'):
         """Base64エンコードされた音声データをテキストに変換"""
-        # FFmpegが利用できない場合
-        if not self.ffmpeg_available:
-            print("[WARNING] FFmpegが利用できないため、音声処理ができません。")
-            return "音声認識機能は現在利用できません。FFmpegをインストールしてください。テキストで入力してください。"
-            
         try:
             print(f"[INFO] 音声認識開始 (言語: {language})")
             
@@ -66,68 +70,61 @@ class SpeechProcessor:
                 temp_webm_path = temp_webm.name
                 print(f"[INFO] 一時ファイル作成: {temp_webm_path}")
             
+            temp_wav_path = None
+            path_for_whisper = temp_webm_path
             try:
-                # WAVファイルとして一時保存するパス
-                temp_wav_path = tempfile.mktemp(suffix='.wav')
-                
-                # FFmpegを使用してWebMからWAVに変換
-                print(f"[INFO] FFmpegでWAVに変換中...")
-                subprocess.run([
-                    'ffmpeg', 
-                    '-i', temp_webm_path, 
-                    '-ar', '16000',  # Whisper APIの推奨サンプルレート
-                    '-ac', '1',      # モノラル
-                    '-y',            # 既存ファイルを上書き
-                    temp_wav_path
-                ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                
-                print(f"[OK] WAV変換成功: {temp_wav_path}")
-                
-                # OpenAI Whisper APIで音声認識
-                with open(temp_wav_path, 'rb') as audio_file:
+                if self.ffmpeg_available:
+                    try:
+                        fd, temp_wav_path = tempfile.mkstemp(suffix='.wav')
+                        os.close(fd)
+                        print("[INFO] FFmpegでWAVに変換中...")
+                        subprocess.run([
+                            'ffmpeg',
+                            '-i', temp_webm_path,
+                            '-ar', '16000',
+                            '-ac', '1',
+                            '-y',
+                            temp_wav_path
+                        ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                        print(f"[OK] WAV変換成功: {temp_wav_path}")
+                        path_for_whisper = temp_wav_path
+                    except (subprocess.SubprocessError, OSError) as e:
+                        print(f"[WARNING] FFmpeg変換に失敗 — WebMを直接送信します: {e}")
+                        path_for_whisper = temp_webm_path
+                else:
+                    print("[INFO] FFmpegなし — WebMを Whisper API に直接送信します")
+
+                with open(path_for_whisper, 'rb') as audio_file:
                     print("[INFO] Whisper APIに送信中...")
-                    
                     transcript = self.client.audio.transcriptions.create(
                         model="whisper-1",
                         file=audio_file,
                         language=language,
                         response_format="text",
-                        prompt="ミニ四駆、B-MAX GP、ストッククラス、タミヤ、レギュレーション、車検、モーター、トルクチューン、ローラー、ギヤ、ブレーキ、マスダンパー"  # ドメイン特有の単語をヒントとして提供
+                        prompt="ミニ四駆、B-MAX GP、ストッククラス、タミヤ、レギュレーション、車検、モーター、トルクチューン、ローラー、ギヤ、ブレーキ、マスダンパー"
                     )
-                    
-                    # Whisper APIはテキストを直接返す
-                    text = transcript.strip() if isinstance(transcript, str) else str(transcript).strip()
-                    
-                    print(f"[OK] 音声認識成功: '{text}'")
-                    
-                    # 空の結果チェック
-                    if not text or text == "":
-                        print("[WARNING] 音声認識結果が空です")
-                        return None
-                    
-                    return text
-                    
-            except subprocess.SubprocessError as e:
-                print(f"[ERROR] FFmpeg実行エラー: {e}")
-                return "音声の変換に失敗しました。FFmpegの設定を確認してください。"
+
+                text = self._extract_transcript_text(transcript)
+                print(f"[OK] 音声認識成功: '{text}'")
+                if not text:
+                    print("[WARNING] 音声認識結果が空です")
+                    return None
+                return text
+
             except Exception as e:
                 print(f"[ERROR] 音声処理エラー: {type(e).__name__}: {e}")
                 import traceback
                 traceback.print_exc()
-                
-                # エラーの詳細情報
                 if hasattr(e, 'response'):
                     print(f"API応答: {e.response}")
-                
                 return None
-                
+
             finally:
-                # 一時ファイルのクリーンアップ
                 try:
                     if os.path.exists(temp_webm_path):
                         os.unlink(temp_webm_path)
                         print(f"[INFO] 一時ファイル削除: {temp_webm_path}")
-                    if 'temp_wav_path' in locals() and os.path.exists(temp_wav_path):
+                    if temp_wav_path and os.path.exists(temp_wav_path):
                         os.unlink(temp_wav_path)
                         print(f"[INFO] 一時ファイル削除: {temp_wav_path}")
                 except Exception as e:
